@@ -13,7 +13,12 @@ namespace SISTEMA_WEB___TIENDA.Controllers
         public MarcasController(AppDbContext context) => _context = context;
 
         public async Task<IActionResult> Index()
-            => View(await _context.Marcas.ToListAsync());
+        {
+            var marcas = await _context.Marcas
+                .Include(m => m.Prendas)
+                .ToListAsync();
+            return View(marcas);
+        }
 
         public IActionResult Create() => View();
 

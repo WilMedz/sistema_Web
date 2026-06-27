@@ -103,8 +103,8 @@
     <form asp-action="Edit" method="post">
         @Html.AntiForgeryToken()
         <input asp-for="MarcaId" type="hidden" />
-        <div asp-validation-summary="All" class="alert alert-danger small py-2 mb-3"></div>
-
+@*         <div asp-validation-summary="All" class="alert alert-danger small py-2 mb-3"></div>
+ *@
         <label class="field-label">Nombre de la Marca</label>
         <input asp-for="NombreMarca" class="field-input" />
         <span asp-validation-for="NombreMarca" class="text-danger" style="font-size:0.72rem;"></span>

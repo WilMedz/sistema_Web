@@ -130,7 +130,7 @@
             <div class="col-md-4">
                 <label class="field-label">Color</label>
                 <input asp-for="Color" class="field-input" placeholder="Ej: Negro, Blanco, Rojo..." />
-                <span asp-validation-for="Color" class="text-danger" style="font-size:0.72rem;"></span>
+                @* <span asp-validation-for="Color" class="text-danger" style="font-size:0.72rem;"></span> *@
             </div>
             <div class="col-md-4">
                 <label class="field-label">Stock Inicial</label>
@@ -141,7 +141,8 @@
 
         <div class="d-flex gap-3 mt-4">
             <button type="submit" class="btn-guardar">
-                <i class="bi bi-check-lg me-2"></i>GUARDAR VARIANTE
+@*                 <div asp-validation-summary="All" class="alert alert-danger small py-2 mb-3"></div>
+ *@                <i class="bi bi-check-lg me-2"></i>GUARDAR VARIANTE
             </button>
             <a asp-action="Index" class="btn-cancelar">Cancelar</a>
         </div>
