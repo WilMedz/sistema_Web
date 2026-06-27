@@ -12,15 +12,15 @@ using SISTEMA_WEB___TIENDA.Data;
 namespace SISTEMA_WEB___TIENDA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260612092940_Mig1")]
-    partial class Mig1
+    [Migration("20260627201335_MIg 27")]
+    partial class MIg27
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -41,6 +41,33 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                     b.HasKey("CategoriaId");
 
                     b.ToTable("Categorias");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoriaId = 1,
+                            NombreCategoria = "Casacas"
+                        },
+                        new
+                        {
+                            CategoriaId = 2,
+                            NombreCategoria = "Polos"
+                        },
+                        new
+                        {
+                            CategoriaId = 3,
+                            NombreCategoria = "Pantalones"
+                        },
+                        new
+                        {
+                            CategoriaId = 4,
+                            NombreCategoria = "Vestidos"
+                        },
+                        new
+                        {
+                            CategoriaId = 5,
+                            NombreCategoria = "Accesorios"
+                        });
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Ciudad", b =>
@@ -64,7 +91,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                         new
                         {
                             CiudadId = 1,
-                            NombreCiudad = "Lima"
+                            NombreCiudad = "Cajamarca"
                         });
                 });
 
@@ -113,11 +140,31 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                         {
                             ClienteId = 1,
                             CiudadId = 1,
-                            Contrasena = "Astra2026!",
-                            CorreoElectronico = "admin@astrastore.com",
+                            Contrasena = "$2a$11$dIhzGeX6bj/aLtA6W9SBIe.eq7waJlULyimU0VTFC87LQrnTWNoAK",
+                            CorreoElectronico = "admin@aleanastore.com",
                             FechaNacimiento = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Nombres = "Administrador Astra Store",
+                            Nombres = "Administrador Aleana Store",
                             RolId = 1
+                        },
+                        new
+                        {
+                            ClienteId = 2,
+                            CiudadId = 1,
+                            Contrasena = "$2a$11$p45sXe/0Nm0WMRQFCeg7vuqwz6IBLLHW61bToDgBV7u1Wi5uxUFM6",
+                            CorreoElectronico = "cajero@aleanastore.com",
+                            FechaNacimiento = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Nombres = "Cajero Aleana Store",
+                            RolId = 3
+                        },
+                        new
+                        {
+                            ClienteId = 3,
+                            CiudadId = 1,
+                            Contrasena = "$2a$11$o1xX0V900pVHmpGfM7TFwetAnzIwz58gzQQKA5IMi5Klyx8LibLSG",
+                            CorreoElectronico = "cliente@aleanastore.com",
+                            FechaNacimiento = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Nombres = "Cliente Prueba",
+                            RolId = 2
                         });
                 });
 
@@ -135,7 +182,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                     b.Property<int>("PedidoId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("PrecioUnitarioSnapshot")
+                    b.Property<decimal>("PrecioUnitario")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -182,6 +229,16 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                     b.HasIndex("ClientesId");
 
                     b.ToTable("DireccionesEnvio");
+
+                    b.HasData(
+                        new
+                        {
+                            DireccionId = 1,
+                            CalleAvenida = "Jr. Principal 123",
+                            ClientesId = 1,
+                            Distrito = "Cajamarca",
+                            Referencia = "Dirección por defecto"
+                        });
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.EstadoPedido", b =>
@@ -192,7 +249,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstadoId"));
 
-                    b.Property<string>("DescripcionEstado")
+                    b.Property<string>("NombreEstado")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -200,6 +257,33 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                     b.HasKey("EstadoId");
 
                     b.ToTable("EstadosPedido");
+
+                    b.HasData(
+                        new
+                        {
+                            EstadoId = 1,
+                            NombreEstado = "Pendiente"
+                        },
+                        new
+                        {
+                            EstadoId = 2,
+                            NombreEstado = "Confirmado"
+                        },
+                        new
+                        {
+                            EstadoId = 3,
+                            NombreEstado = "En camino"
+                        },
+                        new
+                        {
+                            EstadoId = 4,
+                            NombreEstado = "Entregado"
+                        },
+                        new
+                        {
+                            EstadoId = 5,
+                            NombreEstado = "Cancelado"
+                        });
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Marca", b =>
@@ -218,6 +302,18 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                     b.HasKey("MarcaId");
 
                     b.ToTable("Marcas");
+
+                    b.HasData(
+                        new
+                        {
+                            MarcaId = 1,
+                            NombreMarca = "Aleana"
+                        },
+                        new
+                        {
+                            MarcaId = 2,
+                            NombreMarca = "Sin Marca"
+                        });
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.MetodoPago", b =>
@@ -236,6 +332,23 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                     b.HasKey("MetodoPagoId");
 
                     b.ToTable("MetodosPago");
+
+                    b.HasData(
+                        new
+                        {
+                            MetodoPagoId = 1,
+                            DescripcionPago = "Yape / Plin"
+                        },
+                        new
+                        {
+                            MetodoPagoId = 2,
+                            DescripcionPago = "Tarjeta"
+                        },
+                        new
+                        {
+                            MetodoPagoId = 3,
+                            DescripcionPago = "Efectivo"
+                        });
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Pedido", b =>
@@ -323,6 +436,52 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                     b.ToTable("Prendas");
                 });
 
+            modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Proveedor", b =>
+                {
+                    b.Property<int>("ProveedorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProveedorId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Contacto")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Correo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("RUC")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("RazonSocial")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.HasKey("ProveedorId");
+
+                    b.ToTable("Proveedores");
+                });
+
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Roles", b =>
                 {
                     b.Property<int>("RolId")
@@ -345,6 +504,16 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                         {
                             RolId = 1,
                             NombreRol = "Administrador"
+                        },
+                        new
+                        {
+                            RolId = 2,
+                            NombreRol = "Cliente"
+                        },
+                        new
+                        {
+                            RolId = 3,
+                            NombreRol = "Cajero"
                         });
                 });
 

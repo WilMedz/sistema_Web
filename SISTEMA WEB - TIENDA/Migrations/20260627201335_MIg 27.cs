@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace SISTEMA_WEB___TIENDA.Migrations
 {
     /// <inheritdoc />
-    public partial class Mig1 : Migration
+    public partial class MIg27 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,7 +45,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                 {
                     EstadoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DescripcionEstado = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                    NombreEstado = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -74,6 +76,25 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MetodosPago", x => x.MetodoPagoId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Proveedores",
+                columns: table => new
+                {
+                    ProveedorId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RazonSocial = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    RUC = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
+                    Contacto = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Telefono = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    Correo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Direccion = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Proveedores", x => x.ProveedorId);
                 });
 
             migrationBuilder.CreateTable(
@@ -244,7 +265,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                     DetalleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Cantidad = table.Column<int>(type: "int", nullable: false),
-                    PrecioUnitarioSnapshot = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    PrecioUnitario = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     PedidoId = table.Column<int>(type: "int", nullable: false),
                     VarianteId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -266,19 +287,77 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Categorias",
+                columns: new[] { "CategoriaId", "NombreCategoria" },
+                values: new object[,]
+                {
+                    { 1, "Casacas" },
+                    { 2, "Polos" },
+                    { 3, "Pantalones" },
+                    { 4, "Vestidos" },
+                    { 5, "Accesorios" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Ciudades",
                 columns: new[] { "CiudadId", "NombreCiudad" },
-                values: new object[] { 1, "Lima" });
+                values: new object[] { 1, "Cajamarca" });
+
+            migrationBuilder.InsertData(
+                table: "EstadosPedido",
+                columns: new[] { "EstadoId", "NombreEstado" },
+                values: new object[,]
+                {
+                    { 1, "Pendiente" },
+                    { 2, "Confirmado" },
+                    { 3, "En camino" },
+                    { 4, "Entregado" },
+                    { 5, "Cancelado" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Marcas",
+                columns: new[] { "MarcaId", "NombreMarca" },
+                values: new object[,]
+                {
+                    { 1, "Aleana" },
+                    { 2, "Sin Marca" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MetodosPago",
+                columns: new[] { "MetodoPagoId", "DescripcionPago" },
+                values: new object[,]
+                {
+                    { 1, "Yape / Plin" },
+                    { 2, "Tarjeta" },
+                    { 3, "Efectivo" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "RolId", "NombreRol" },
-                values: new object[] { 1, "Administrador" });
+                values: new object[,]
+                {
+                    { 1, "Administrador" },
+                    { 2, "Cliente" },
+                    { 3, "Cajero" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Clientes",
                 columns: new[] { "ClienteId", "CiudadId", "Contrasena", "CorreoElectronico", "FechaNacimiento", "Nombres", "RolId" },
-                values: new object[] { 1, 1, "Astra2026!", "admin@astrastore.com", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Administrador Astra Store", 1 });
+                values: new object[,]
+                {
+                    { 1, 1, "$2a$11$dIhzGeX6bj/aLtA6W9SBIe.eq7waJlULyimU0VTFC87LQrnTWNoAK", "admin@aleanastore.com", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Administrador Aleana Store", 1 },
+                    { 2, 1, "$2a$11$p45sXe/0Nm0WMRQFCeg7vuqwz6IBLLHW61bToDgBV7u1Wi5uxUFM6", "cajero@aleanastore.com", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cajero Aleana Store", 3 },
+                    { 3, 1, "$2a$11$o1xX0V900pVHmpGfM7TFwetAnzIwz58gzQQKA5IMi5Klyx8LibLSG", "cliente@aleanastore.com", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cliente Prueba", 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "DireccionesEnvio",
+                columns: new[] { "DireccionId", "CalleAvenida", "ClientesId", "Distrito", "Referencia" },
+                values: new object[] { 1, "Jr. Principal 123", 1, "Cajamarca", "Dirección por defecto" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clientes_CiudadId",
@@ -346,6 +425,9 @@ namespace SISTEMA_WEB___TIENDA.Migrations
         {
             migrationBuilder.DropTable(
                 name: "DetallesPedido");
+
+            migrationBuilder.DropTable(
+                name: "Proveedores");
 
             migrationBuilder.DropTable(
                 name: "Pedidos");

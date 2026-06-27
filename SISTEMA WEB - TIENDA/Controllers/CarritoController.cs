@@ -27,60 +27,67 @@ namespace SISTEMA_WEB___TIENDA.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Agregar(int prendaId, int cantidad = 1)
+        public async Task<IActionResult> Agregar(int varianteId, int cantidad = 1)
         {
-            var prenda = await _context.Prendas.FindAsync(prendaId);
-            if (prenda == null) return NotFound();
+            // 1. Obtener la variante completa (con su prenda padre)
+            var variante = await _context.VariantesPrenda
+                .Include(v => v.Prenda)
+                .FirstOrDefaultAsync(v => v.VarianteId == varianteId);
 
-            // 🔍 VALIDACIÓN DE STOCK: Buscar la disponibilidad en las variantes de esta prenda
-            var totalStockDisponible = await _context.VariantesPrenda
-                .Where(v => v.PrendaId == prendaId)
-                .SumAsync(v => v.Stock);
+            if (variante == null) return NotFound();
 
-            if (totalStockDisponible <= 0)
+            // 2. Validar stock disponible
+            if (variante.Stock <= 0)
             {
-                TempData["ErrorStock"] = "Lo sentimos, este producto se encuentra temporalmente agotado.";
-                return RedirectToAction("Index", "Home"); // O a la vista de detalles de la prenda
+                TempData["ErrorStock"] = $"Lo sentimos, {variante.Prenda.NombrePrenda} (Talla {variante.Talla}, Color {variante.Color}) está agotado.";
+                return RedirectToAction("Index", "Home");
             }
 
             var carrito = HttpContext.Session.GetObject<List<CarritoItem>>(SessionKey)
                           ?? new List<CarritoItem>();
 
-            var itemExistente = carrito.FirstOrDefault(i => i.PrendaId == prendaId);
+            // Verificamos si ya existe la MISMA variante en el carrito
+            var itemExistente = carrito.FirstOrDefault(i => i.VarianteId == varianteId);
             int cantidadTotalSolicitada = cantidad + (itemExistente?.Cantidad ?? 0);
 
-            // Validar que lo acumulado no supere el stock físico real
-            if (cantidadTotalSolicitada > totalStockDisponible)
+            if (cantidadTotalSolicitada > variante.Stock)
             {
-                TempData["ErrorStock"] = $"No puedes agregar esa cantidad. Stock máximo disponible: {totalStockDisponible}.";
+                TempData["ErrorStock"] = $"No puedes agregar esa cantidad. Stock disponible: {variante.Stock}.";
                 return RedirectToAction("Index");
             }
 
-            decimal precio = (prenda.PrecioOferta.HasValue && prenda.PrecioOferta > 0)
-                ? prenda.PrecioOferta.Value
-                : prenda.PrecioLista;
+            decimal precio = (variante.Prenda.PrecioOferta.HasValue && variante.Prenda.PrecioOferta > 0)
+                ? variante.Prenda.PrecioOferta.Value
+                : variante.Prenda.PrecioLista;
 
             if (itemExistente != null)
+            {
                 itemExistente.Cantidad += cantidad;
+            }
             else
+            {
                 carrito.Add(new CarritoItem
                 {
-                    PrendaId = prenda.PrendaId,
-                    NombrePrenda = prenda.NombrePrenda,
-                    ImagenUrl = prenda.ImagenPrincipalUrl,
+                    VarianteId = variante.VarianteId,
+                    PrendaId = variante.PrendaId,
+                    NombrePrenda = variante.Prenda.NombrePrenda,
+                    Talla = variante.Talla,      // <-- Guardamos la talla
+                    Color = variante.Color,      // <-- Guardamos el color
+                    ImagenUrl = variante.Prenda.ImagenPrincipalUrl,
                     Precio = precio,
                     Cantidad = cantidad
                 });
+            }
 
             HttpContext.Session.SetObject(SessionKey, carrito);
             return RedirectToAction("Index");
         }
 
-        public IActionResult Eliminar(int prendaId)
+        public IActionResult Eliminar(int varianteId)
         {
             var carrito = HttpContext.Session.GetObject<List<CarritoItem>>(SessionKey)
                           ?? new List<CarritoItem>();
-            var item = carrito.FirstOrDefault(i => i.PrendaId == prendaId);
+            var item = carrito.FirstOrDefault(i => i.VarianteId == varianteId);
             if (item != null) carrito.Remove(item);
             HttpContext.Session.SetObject(SessionKey, carrito);
             return RedirectToAction("Index");
@@ -160,29 +167,28 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 await _context.SaveChangesAsync();
 
                 // 4. Crear detalles y descontar stock
+                // 4. Crear detalles y descontar stock
                 foreach (var item in carrito)
                 {
-                    // Buscamos la variante asignada de la prenda
+                    // AHORA BUSCAMOS POR VarianteId (que ya viene en el carrito)
                     var variante = await _context.VariantesPrenda
-                        .FirstOrDefaultAsync(v => v.PrendaId == item.PrendaId);
+                        .FirstOrDefaultAsync(v => v.VarianteId == item.VarianteId);
 
                     if (variante == null)
-                        throw new Exception($"Sin variante para producto '{item.NombrePrenda}' (ID {item.PrendaId}). Agrega una variante primero.");
+                        throw new Exception($"La variante del producto '{item.NombrePrenda}' ya no existe.");
 
-                    // 🔍 VALIDACIÓN DE STOCK: Comprobar que hay suficiente cantidad física para la venta
                     if (item.Cantidad > variante.Stock)
                     {
-                        throw new Exception($"Stock insuficiente para '{item.NombrePrenda}'. Solicitado: {item.Cantidad}, Disponible: {variante.Stock}.");
+                        throw new Exception($"Stock insuficiente para '{item.NombrePrenda} (Talla {item.Talla}, Color {item.Color})'. Solicitado: {item.Cantidad}, Disponible: {variante.Stock}.");
                     }
 
-                    // 📉 RESTA DE STOCK: Modificación directa del inventario
                     variante.Stock -= item.Cantidad;
                     _context.VariantesPrenda.Update(variante);
 
                     _context.DetallesPedido.Add(new DetallePedido
                     {
                         PedidoId = pedido.PedidoId,
-                        VarianteId = variante.VarianteId,
+                        VarianteId = variante.VarianteId, // Guardamos el ID real
                         Cantidad = item.Cantidad,
                         PrecioUnitario = item.Precio
                     });

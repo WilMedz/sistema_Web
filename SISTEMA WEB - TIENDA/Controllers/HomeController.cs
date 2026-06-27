@@ -29,6 +29,7 @@ public class HomeController : Controller
         var catalogoPrendas = await _context.Prendas
             .Include(p => p.Marca)
             .Include(p => p.Categoria)
+            .Include(p => p.Variantes)
             .ToListAsync();
 
         return View(catalogoPrendas);

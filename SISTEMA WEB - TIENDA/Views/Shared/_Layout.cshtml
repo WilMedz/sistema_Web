@@ -144,70 +144,75 @@
             <input type="text" class="search-box" placeholder="🔍  Buscar prendas...">
         </div>
 
-        <div class="d-flex align-items-center gap-1 ms-auto">
-            @if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                var rol    = HttpContextAccessor.HttpContext?.Session.GetString("UsuarioRol") ?? "";
-                var nombre = HttpContextAccessor.HttpContext?.Session.GetString("UsuarioNombre") ?? "";
-                var carrito    = HttpContextAccessor.HttpContext?.Session
-                                    .GetObject<List<SISTEMA_WEB___TIENDA.Models.CarritoItem>>("CarritoAleana")
-                                 ?? new List<SISTEMA_WEB___TIENDA.Models.CarritoItem>();
-                var totalItems = carrito.Sum(i => i.Cantidad);
+            <div class="d-flex align-items-center gap-1 ms-auto">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    var rol = HttpContextAccessor.HttpContext?.Session.GetString("UsuarioRol") ?? "";
+                    var nombre = HttpContextAccessor.HttpContext?.Session.GetString("UsuarioNombre") ?? "";
+                    var carrito = HttpContextAccessor.HttpContext?.Session
+                                        .GetObject<List<SISTEMA_WEB___TIENDA.Models.CarritoItem>>("CarritoAleana")
+                                     ?? new List<SISTEMA_WEB___TIENDA.Models.CarritoItem>();
+                    var totalItems = carrito.Sum(i => i.Cantidad);
 
-                if (rol == "Administrador")
-                {
-                    <a asp-controller="Login" asp-action="Admin" class="nav-link-item">
-                        <i class="bi bi-speedometer2"></i>
-                        <span class="d-none d-md-inline ms-1">Dashboard</span>
+                    if (rol == "Administrador")
+                    {
+                        <a asp-controller="Login" asp-action="Admin" class="nav-link-item">
+                            <i class="bi bi-speedometer2"></i>
+                            <span class="d-none d-md-inline ms-1">Dashboard</span>
+                        </a>
+                    }
+                    else if (rol == "Cajero")
+                    {
+                        <a asp-controller="Caja" asp-action="Index" class="nav-link-item">
+                            <i class="bi bi-receipt"></i>
+                            <span class="d-none d-md-inline ms-1">Caja</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Home" asp-action="Index" class="nav-link-item">
+                            <i class="bi bi-grid"></i>
+                            <span class="d-none d-md-inline ms-1">Catálogo</span>
+                        </a>
+                    }
+
+                    <a asp-controller="Account" asp-action="Index" class="nav-link-item">
+                        <i class="bi bi-person-circle"></i>
+                        <span class="d-none d-md-inline ms-1">@nombre.Split(' ').First()</span>
                     </a>
-                }
-                else if (rol == "Cajero")
-                {
-                    <a asp-controller="Caja" asp-action="Index" class="nav-link-item">
-                        <i class="bi bi-receipt"></i>
-                        <span class="d-none d-md-inline ms-1">Caja</span>
-                    </a>
+
+                    <form asp-controller="Login" asp-action="Logout" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="nav-link-item border-0 bg-transparent">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span class="d-none d-md-inline ms-1">Salir</span>
+                        </button>
+                    </form>
+
+                    @* Se agregó la condición para ocultar la bolsa si es Administrador *@
+                    @if (rol != "Administrador")
+                    {
+                        <a asp-controller="Carrito" asp-action="Index" class="btn-bolsa position-relative ms-2">
+                            <i class="bi bi-bag"></i>
+                            <span class="ms-1">Bolsa</span>
+                            @if (totalItems > 0)
+                            {
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
+                                      style="font-size:0.58rem; padding:3px 5px;">
+                                    @totalItems
+                                </span>
+                            }
+                        </a>
+                    }
                 }
                 else
                 {
-                    <a asp-controller="Home" asp-action="Index" class="nav-link-item">
-                        <i class="bi bi-grid"></i>
-                        <span class="d-none d-md-inline ms-1">Catálogo</span>
+                    <a asp-controller="Login" asp-action="Login" class="btn-bolsa">
+                        <i class="bi bi-person me-1"></i>Iniciar Sesión
                     </a>
                 }
+            </div>
 
-                <a asp-controller="Account" asp-action="Index" class="nav-link-item">
-                    <i class="bi bi-person-circle"></i>
-                    <span class="d-none d-md-inline ms-1">@nombre.Split(' ').First()</span>
-                </a>
-
-                <form asp-controller="Login" asp-action="Logout" method="post" class="m-0">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="nav-link-item border-0 bg-transparent">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <span class="d-none d-md-inline ms-1">Salir</span>
-                    </button>
-                </form>
-
-                <a asp-controller="Carrito" asp-action="Index" class="btn-bolsa position-relative ms-2">
-                    <i class="bi bi-bag"></i>
-                    <span class="ms-1">Bolsa</span>
-                    @if (totalItems > 0)
-                    {
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
-                              style="font-size:0.58rem; padding:3px 5px;">
-                            @totalItems
-                        </span>
-                    }
-                </a>
-            }
-            else
-            {
-                <a asp-controller="Login" asp-action="Login" class="btn-bolsa">
-                    <i class="bi bi-person me-1"></i>Iniciar Sesión
-                </a>
-            }
-        </div>  @* *@
 
     </div>  @* *@
 </nav>  @*  *@

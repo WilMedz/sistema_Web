@@ -140,7 +140,7 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             {
                 Nombres = modelo.Nombres,
                 CorreoElectronico = modelo.CorreoElectronico,
-                CiudadId = modelo.CuidadId,
+                CiudadId = modelo.CiudadId,
                 RolId = idRolDefault,
                 FechaNacimiento = modelo.FechaNacimiento
             };
