@@ -45,9 +45,12 @@ namespace SISTEMA_WEB___TIENDA.Controllers
         {
             var pedido = await _context.Pedidos.FindAsync(id);
             if (pedido == null) return NotFound();
+
+            // CORRECCIÓN: Se cambió "DescripcionEstado" por "NombreEstado" según la instrucción de tu vista
             ViewBag.Estados = new SelectList(
                 await _context.EstadosPedido.ToListAsync(),
-                "EstadoId", "DescripcionEstado", pedido.EstadoId);
+                "EstadoId", "NombreEstado", pedido.EstadoId);
+
             return View(pedido);
         }
 
