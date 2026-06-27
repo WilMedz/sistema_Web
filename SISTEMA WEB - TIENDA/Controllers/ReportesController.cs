@@ -47,5 +47,18 @@ namespace SISTEMA_WEB___TIENDA.Controllers
 
             return View(reporte);
         }
+
+        public async Task<IActionResult> VentasPorMetodoPago()
+        {
+            var metodos = await _context.MetodosPago
+                .Include(m => m.Pedidos)
+                    .ThenInclude(p => p.Clientes)
+                .Include(m => m.Pedidos)
+                    .ThenInclude(p => p.Estado)
+                .ToListAsync();
+
+            // Retorna la vista con los mismos datos
+            return View(metodos);
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace SISTEMA_WEB___TIENDA.ViewModels
         public string ConfirmarContrasena { get; set; }
 
         [Required(ErrorMessage = "Por favor, selecciona tu ciudad de residencia.")]
-        public int CuidadId { get; set; }
+        public int CiudadId { get; set; }
 
         [Required(ErrorMessage = "La fecha de nacimiento es obligatoria.")]
         [DataType(DataType.Date)]

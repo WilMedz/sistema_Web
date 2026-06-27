@@ -11,29 +11,29 @@ namespace SISTEMA_WEB___TIENDA.Models
         public int ClienteId { get; set; }
 
         [Required, StringLength(100)]
-        public string Nombres { get; set; }
+        public string Nombres { get; set; } = string.Empty;
 
         [Required, StringLength(100)]
         [EmailAddress(ErrorMessage = "Ingresa un correo electrónico válido.")]
-        public string CorreoElectronico { get; set; }
+        public string CorreoElectronico { get; set; } = string.Empty;
 
         [Required, StringLength(255)]
-        public string Contrasena { get; set; }
+        public string Contrasena { get; set; } = string.Empty;
 
         [Required]
         public int CiudadId { get; set; }
-        public virtual Ciudad Ciudad { get; set; }
+        public virtual Ciudad? Ciudad { get; set; }
 
         [Required]
         public int RolId { get; set; }
-        public virtual Roles Rol { get; set; }
+        public virtual Roles? Rol { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        [MayorDeEdad]
+        [MayorDeEdad] // Tu validación personalizada queda intacta
         public DateTime FechaNacimiento { get; set; }
 
-        public virtual ICollection<DireccionEnvio> Direcciones { get; set; }
-        public virtual ICollection<Pedido> Pedidos { get; set; }
+        public virtual ICollection<DireccionEnvio> Direcciones { get; set; } = new List<DireccionEnvio>();
+        public virtual ICollection<Pedido> Pedidos { get; set; } = new List<Pedido>();
     }
 }

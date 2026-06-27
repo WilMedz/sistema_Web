@@ -32,16 +32,36 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             var prenda = await _context.Prendas.FindAsync(prendaId);
             if (prenda == null) return NotFound();
 
+            // 🔍 VALIDACIÓN DE STOCK: Buscar la disponibilidad en las variantes de esta prenda
+            var totalStockDisponible = await _context.VariantesPrenda
+                .Where(v => v.PrendaId == prendaId)
+                .SumAsync(v => v.Stock);
+
+            if (totalStockDisponible <= 0)
+            {
+                TempData["ErrorStock"] = "Lo sentimos, este producto se encuentra temporalmente agotado.";
+                return RedirectToAction("Index", "Home"); // O a la vista de detalles de la prenda
+            }
+
             var carrito = HttpContext.Session.GetObject<List<CarritoItem>>(SessionKey)
                           ?? new List<CarritoItem>();
+
+            var itemExistente = carrito.FirstOrDefault(i => i.PrendaId == prendaId);
+            int cantidadTotalSolicitada = cantidad + (itemExistente?.Cantidad ?? 0);
+
+            // Validar que lo acumulado no supere el stock físico real
+            if (cantidadTotalSolicitada > totalStockDisponible)
+            {
+                TempData["ErrorStock"] = $"No puedes agregar esa cantidad. Stock máximo disponible: {totalStockDisponible}.";
+                return RedirectToAction("Index");
+            }
 
             decimal precio = (prenda.PrecioOferta.HasValue && prenda.PrecioOferta > 0)
                 ? prenda.PrecioOferta.Value
                 : prenda.PrecioLista;
 
-            var item = carrito.FirstOrDefault(i => i.PrendaId == prendaId);
-            if (item != null)
-                item.Cantidad += cantidad;
+            if (itemExistente != null)
+                itemExistente.Cantidad += cantidad;
             else
                 carrito.Add(new CarritoItem
                 {
@@ -66,7 +86,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET — muestra el formulario de checkout
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
@@ -86,7 +105,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return View(new CheckoutVM());
         }
 
-        // POST — procesa el checkout
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Checkout(CheckoutVM modelo)
@@ -141,14 +159,25 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 _context.Pedidos.Add(pedido);
                 await _context.SaveChangesAsync();
 
-                // 4. Crear detalles
+                // 4. Crear detalles y descontar stock
                 foreach (var item in carrito)
                 {
+                    // Buscamos la variante asignada de la prenda
                     var variante = await _context.VariantesPrenda
                         .FirstOrDefaultAsync(v => v.PrendaId == item.PrendaId);
 
                     if (variante == null)
-                        throw new Exception($"Sin variante para producto ID {item.PrendaId}. Agrega una variante primero.");
+                        throw new Exception($"Sin variante para producto '{item.NombrePrenda}' (ID {item.PrendaId}). Agrega una variante primero.");
+
+                    // 🔍 VALIDACIÓN DE STOCK: Comprobar que hay suficiente cantidad física para la venta
+                    if (item.Cantidad > variante.Stock)
+                    {
+                        throw new Exception($"Stock insuficiente para '{item.NombrePrenda}'. Solicitado: {item.Cantidad}, Disponible: {variante.Stock}.");
+                    }
+
+                    // 📉 RESTA DE STOCK: Modificación directa del inventario
+                    variante.Stock -= item.Cantidad;
+                    _context.VariantesPrenda.Update(variante);
 
                     _context.DetallesPedido.Add(new DetallePedido
                     {

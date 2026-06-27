@@ -150,7 +150,7 @@
                 var rol    = HttpContextAccessor.HttpContext?.Session.GetString("UsuarioRol") ?? "";
                 var nombre = HttpContextAccessor.HttpContext?.Session.GetString("UsuarioNombre") ?? "";
                 var carrito    = HttpContextAccessor.HttpContext?.Session
-                                    .GetObject<List<SISTEMA_WEB___TIENDA.Models.CarritoItem>>("CarritoAstra")
+                                    .GetObject<List<SISTEMA_WEB___TIENDA.Models.CarritoItem>>("CarritoAleana")
                                  ?? new List<SISTEMA_WEB___TIENDA.Models.CarritoItem>();
                 var totalItems = carrito.Sum(i => i.Cantidad);
 

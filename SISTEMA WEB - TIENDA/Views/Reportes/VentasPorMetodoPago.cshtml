@@ -1,0 +1,300 @@
+﻿@model IEnumerable<SISTEMA_WEB___TIENDA.Models.MetodoPago>
+@{
+    ViewData["Title"] = "Ventas por Método de Pago";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #4a1020 0%, #6b1a2a 60%, #8c2438 100%);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+            top: -40px;
+            right: -30px;
+            border-radius: 50%;
+        }
+
+        .page-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .metodo-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+
+    .metodo-header {
+        padding: 16px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #f0f0f0;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .metodo-nombre {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #6b1a2a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .metodo-stats {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .stat-pill {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+    }
+
+    .tabla-admin th {
+        background: #4a1020;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+    }
+
+    .tabla-admin td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    .tabla-admin tbody tr:hover {
+        background: #fdf8f8;
+    }
+
+    .section-lbl {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin-bottom: 12px;
+    }
+
+    .badge-estado {
+        border-radius: 6px;
+        padding: 3px 9px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .resumen-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        padding: 20px 22px;
+        border-left: 4px solid #6b1a2a;
+        height: 100%;
+    }
+
+    .resumen-label {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin-bottom: 6px;
+    }
+
+    .resumen-valor {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #6b1a2a;
+        line-height: 1;
+    }
+
+    .barra-wrap {
+        background: #f0f0f0;
+        border-radius: 999px;
+        height: 8px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .barra-fill {
+        height: 8px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #6b1a2a, #c9a84c);
+    }
+</style>
+
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-credit-card me-1"></i>Administración
+        </p>
+        <h4>Ventas por Método de Pago</h4>
+    </div>
+    <a asp-controller="Login" asp-action="Admin"
+       class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;position:relative;z-index:1;">
+        <i class="bi bi-arrow-left me-1"></i>Dashboard
+    </a>
+</div>
+
+@{
+    var totalGlobal = Model.Sum(m => m.Pedidos?.Sum(p => p.TotalCompra) ?? 0);
+    var pedidosGlobal = Model.Sum(m => m.Pedidos?.Count ?? 0);
+}
+
+<!-- RESUMEN  -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="resumen-card">
+            <div class="resumen-label"><i class="bi bi-currency-dollar me-1"></i>Total </div>
+            <div class="resumen-valor">S/ @totalGlobal.ToString("N2")</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="resumen-card" style="border-left-color:#c9a84c;">
+            <div class="resumen-label"><i class="bi bi-bag-check me-1"></i>Total Pedidos</div>
+            <div class="resumen-valor" style="color:#c9a84c;">@pedidosGlobal</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="resumen-card" style="border-left-color:#1a4a8a;">
+            <div class="resumen-label"><i class="bi bi-credit-card me-1"></i>Métodos Frecuentes</div>
+            <div class="resumen-valor" style="color:#1a4a8a;">@Model.Count()</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="resumen-card" style="border-left-color:#065f46;">
+            <div class="resumen-label"><i class="bi bi-trophy me-1"></i>Método Principal</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#065f46;padding-top:6px;">
+                @(Model.OrderByDescending(m => m.Pedidos?.Count ?? 0).FirstOrDefault()?.DescripcionPago ?? "—")
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DESGLOSE  -->
+<div class="section-lbl">Desglose</div>
+
+@foreach (var metodo in Model.OrderByDescending(m => m.Pedidos?.Sum(p => p.TotalCompra) ?? 0))
+{
+    var pedidos = metodo.Pedidos?.OrderByDescending(p => p.FechaPedido).ToList() ?? new();
+    var totalMetodo = pedidos.Sum(p => p.TotalCompra);
+    var pct = totalGlobal > 0 ? (double)(totalMetodo / totalGlobal) * 100 : 0;
+
+    <div class="metodo-card">
+        <div class="metodo-header">
+            <div class="metodo-nombre">
+                <div style="width:36px;height:36px;border-radius:8px;background:#6b1a2a12;
+                    display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-credit-card-fill" style="color:#6b1a2a;"></i>
+                </div>
+                @metodo.DescripcionPago
+            </div>
+            <div class="metodo-stats">
+                <span class="stat-pill" style="background:#6b1a2a12;color:#6b1a2a;">
+                    <i class="bi bi-bag me-1"></i>@pedidos.Count pedido(s)
+                </span>
+                <span class="stat-pill" style="background:#c9a84c22;color:#a8893c;">
+                    S/ @totalMetodo.ToString("N2")
+                </span>
+                <span class="stat-pill" style="background:#f0f0f0;color:#666;">
+                    @pct.ToString("F1")% del total
+                </span>
+            </div>
+        </div>
+
+        <div style="padding: 10px 22px 6px;">
+            <div class="barra-wrap">
+                <div class="barra-fill" style="width:@pct.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)%"></div>
+            </div>
+        </div>
+
+        @if (!pedidos.Any())
+        {
+            <div class="text-center py-4 text-muted" style="font-size:0.82rem;">
+                <i class="bi bi-inbox" style="font-size:1.5rem;color:#ddd;display:block;margin-bottom:6px;"></i>
+                Sin pedidos con este método.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table tabla-admin align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-3"># Pedido</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th class="text-end pe-3">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in pedidos)
+                        {
+                            var (bg, color) = p.Estado?.NombreEstado switch
+                            {
+                                "Pendiente" => ("#fef9c3", "#854d0e"),
+                                "Procesando" => ("#dbeafe", "#1e40af"),
+                                "Enviado" => ("#e0e7ff", "#3730a3"),
+                                "Entregado" => ("#d1fae5", "#065f46"),
+                                "Cancelado" => ("#fee2e2", "#991b1b"),
+                                _ => ("#f3f4f6", "#374151")
+                            };
+                            <tr>
+                                <td class="ps-3 fw-bold font-monospace" style="color:#6b1a2a;">
+                                    #@p.PedidoId.ToString("D6")
+                                </td>
+                                <td>@p.Clientes?.Nombres</td>
+                                <td style="color:#666;font-size:0.82rem;">@p.FechaPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <span class="badge-estado" style="background:@bg;color:@color;">
+                                        @p.Estado?.NombreEstado
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3 fw-bold" style="color:#6b1a2a;">
+                                    S/ @p.TotalCompra.ToString("N2")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:#faf9f7;">
+                            <td colspan="4" class="text-end fw-bold ps-3" style="font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;">
+                                Subtotal @metodo.DescripcionPago
+                            </td>
+                            <td class="text-end pe-3 fw-bold" style="color:#6b1a2a;">
+                                S/ @totalMetodo.ToString("N2")
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </div>
+}
