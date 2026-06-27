@@ -1,0 +1,202 @@
+﻿@model SISTEMA_WEB___TIENDA.Models.Prenda
+@{
+    ViewData["Title"] = "Nueva Prenda";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .form-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        padding: 28px;
+    }
+
+    .field-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .field-input {
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid #ddd;
+        border-radius: 0;
+        padding: 9px 0;
+        font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        background: transparent;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+        .field-input:focus {
+            border-bottom-color: #6b1a2a;
+        }
+
+    select.field-input {
+        cursor: pointer;
+    }
+
+    textarea.field-input {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .section-divider {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin: 24px 0 16px;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 8px;
+    }
+
+    .btn-guardar {
+        background: #6b1a2a;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 28px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .btn-guardar:hover {
+            background: #4a1020;
+        }
+
+    .btn-cancelar {
+        background: transparent;
+        color: #888;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 11px 20px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-cancelar:hover {
+            border-color: #6b1a2a;
+            color: #6b1a2a;
+        }
+
+    .preview-img {
+        width: 80px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        display: none;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="form-header">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-tag me-1"></i>Prendas
+        </p>
+        <h4>Agregar Nueva Prenda</h4>
+    </div>
+</div>
+
+<div class="form-card">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 mb-3"></div>
+
+        <div class="section-divider">Información General</div>
+        <div class="row g-4">
+            <div class="col-md-8">
+                <label class="field-label">Nombre de la Prenda</label>
+                <input asp-for="NombrePrenda" class="field-input" placeholder="Ej: Casaca de Cuero Urbana" />
+                <span asp-validation-for="NombrePrenda" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="field-label">Categoría</label>
+                <select asp-for="CategoriaId" class="field-input" asp-items="ViewBag.CategoriaId">
+                    <option value="">— Selecciona —</option>
+                </select>
+                <span asp-validation-for="CategoriaId" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-12">
+                <label class="field-label">Descripción</label>
+                <textarea asp-for="Descripcion" class="field-input" placeholder="Describe material, corte, temporada..."></textarea>
+                <span asp-validation-for="Descripcion" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+        </div>
+
+        <div class="section-divider">Precios y Marca</div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <label class="field-label">Precio de Lista (S/)</label>
+                <input asp-for="PrecioLista" class="field-input" type="number" step="0.01" placeholder="0.00" />
+                <span asp-validation-for="PrecioLista" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="field-label">Precio Oferta (S/ — Opcional)</label>
+                <input asp-for="PrecioOferta" class="field-input" type="number" step="0.01" placeholder="0.00" />
+                <span asp-validation-for="PrecioOferta" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="field-label">Marca</label>
+                <select asp-for="MarcaId" class="field-input" asp-items="ViewBag.MarcaId">
+                    <option value="">— Selecciona —</option>
+                </select>
+                <span asp-validation-for="MarcaId" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+        </div>
+
+        <div class="section-divider">Imagen</div>
+        <div class="col-md-8">
+            <label class="field-label">URL de Imagen Principal</label>
+            <input asp-for="ImagenPrincipalUrl" class="field-input" placeholder="https://..."
+                   oninput="document.getElementById('imgPreview').src=this.value;document.getElementById('imgPreview').style.display=this.value?'block':'none'" />
+            <span asp-validation-for="ImagenPrincipalUrl" class="text-danger" style="font-size:0.72rem;"></span>
+            <img id="imgPreview" class="preview-img" alt="Vista previa"
+                 onerror="this.style.display='none'">
+        </div>
+
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn-guardar">
+                <i class="bi bi-check-lg me-2"></i>GUARDAR PRENDA
+            </button>
+            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

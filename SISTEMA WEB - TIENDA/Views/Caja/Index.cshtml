@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Panel de Caja";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var nombre = HttpContextAccessor.HttpContext?.Session.GetString("UsuarioNombre") ?? "Cajero";
+}
+
+<style>
+    .caja-header {
+        background: linear-gradient(135deg, #198754, #146c43);
+        color: white;
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 24px;
+    }
+    .caja-card {
+        border: none;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        transition: transform 0.2s;
+    }
+    .caja-card:hover { transform: translateY(-3px); }
+</style>
+
+<div class="caja-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+        <p class="mb-1 small" style="color:rgba(255,255,255,0.7); text-transform:uppercase; letter-spacing:1px;">
+            <i class="bi bi-receipt me-1"></i>Módulo de Caja
+        </p>
+        <h4 class="fw-bold mb-0">Hola, @nombre.Split(' ')[0]</h4>
+        <small style="color:rgba(255,255,255,0.6);">@DateTime.Now.ToString("dddd dd/MM/yyyy HH:mm", new System.Globalization.CultureInfo("es-PE"))</small>
+    </div>
+    <span class="badge px-3 py-2 rounded-pill" style="background:rgba(255,255,255,0.2);font-size:0.8rem;">
+        <i class="bi bi-person-badge me-1"></i>Cajero
+    </span>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="caja-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div style="width:44px;height:44px;background:#19875422;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#198754;">
+                    <i class="bi bi-cart-check-fill"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0">Gestionar Pedidos</h6>
+                    <small class="text-muted">Ver, confirmar y actualizar estados</small>
+                </div>
+            </div>
+            <a asp-controller="Pedidos" asp-action="Index" class="btn btn-sm fw-bold text-white w-100" style="background:#198754;border-radius:8px;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Ver Pedidos
+            </a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="caja-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div style="width:44px;height:44px;background:#1a1a2e22;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#1a1a2e;">
+                    <i class="bi bi-tag-fill"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0">Consultar Catálogo</h6>
+                    <small class="text-muted">Ver prendas y precios actuales</small>
+                </div>
+            </div>
+            <a asp-controller="Prendas" asp-action="Index" class="btn btn-sm fw-bold text-white w-100" style="background:#1a1a2e;border-radius:8px;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Ver Catálogo
+            </a>
+        </div>
+    </div>
+</div>

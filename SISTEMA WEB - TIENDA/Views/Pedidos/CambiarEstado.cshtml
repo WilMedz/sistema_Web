@@ -1,0 +1,98 @@
+﻿@model SISTEMA_WEB___TIENDA.Models.Pedido
+@{
+    ViewData["Title"] = "Cambiar Estado"; Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+    }
+
+        .form-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        padding: 28px;
+        max-width: 480px;
+    }
+
+    .field-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .field-input {
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid #ddd;
+        padding: 9px 0;
+        font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        background: transparent;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+        .field-input:focus {
+            border-bottom-color: #6b1a2a;
+        }
+
+    .btn-guardar {
+        background: #6b1a2a;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 28px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+    }
+
+    .btn-cancelar {
+        background: transparent;
+        color: #888;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 11px 20px;
+        font-size: 0.82rem;
+        text-decoration: none;
+    }
+</style>
+
+<div class="form-header">
+    <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+        <i class="bi bi-arrow-repeat me-1"></i>Pedidos
+    </p>
+    <h4>Cambiar Estado — Pedido #@Model.PedidoId.ToString("D6")</h4>
+</div>
+
+<div class="form-card">
+    <form asp-action="CambiarEstado" asp-route-id="@Model.PedidoId" method="post">
+        @Html.AntiForgeryToken()
+        <label class="field-label">Nuevo Estado del Pedido</label>
+        <select name="EstadoId" class="field-input" asp-items="ViewBag.Estados">
+            <option value="">— Selecciona —</option>
+        </select>
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn-guardar"><i class="bi bi-check-lg me-2"></i>ACTUALIZAR</button>
+            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Orden Confirmada";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 p-5 text-center" style="background:white;">
+
+            <div class="mb-3" style="font-size:4rem;line-height:1;">✅</div>
+
+            <h3 class="fw-bold mb-2" style="font-family:'Playfair Display',serif;color:#4a1020;">
+                ¡PEDIDO CONFIRMADO!
+            </h3>
+            <p class="text-muted mb-4">Tu orden ha sido registrada correctamente.</p>
+
+            <div class="p-3 rounded-3 mb-3" style="background:#faf9f7;border:1px solid #c9a84c44;">
+                <small class="text-uppercase fw-bold text-muted d-block mb-1" style="letter-spacing:1px;font-size:0.68rem;">
+                    Número de Pedido
+                </small>
+                <h4 class="fw-bold font-monospace mb-0" style="color:#6b1a2a;">
+                    #@TempData["NumeroPedido"]?.ToString()?.PadLeft(6, '0')
+                </h4>
+            </div>
+
+            @if (TempData["DireccionEnvio"] != null)
+            {
+                <div class="p-3 rounded-3 mb-3 text-start" style="background:#f8f8f8;border-radius:8px;">
+                    <small class="text-uppercase fw-bold text-muted d-block mb-2" style="letter-spacing:1px;font-size:0.68rem;">
+                        Detalles del Envío
+                    </small>
+                    <div class="small">
+                        <i class="bi bi-geo-alt me-1" style="color:#6b1a2a;"></i>
+                        <strong>Dirección:</strong> @TempData["DireccionEnvio"]
+                    </div>
+                    <div class="small mt-1">
+                        <i class="bi bi-credit-card me-1" style="color:#6b1a2a;"></i>
+                        <strong>Pago:</strong> @TempData["MetodoPago"]
+                    </div>
+                </div>
+            }
+
+            <div class="alert small mb-4" style="background:#fff8f0;border:1px solid #e67e2240;border-radius:8px;color:#666;">
+                <i class="bi bi-truck me-1" style="color:#e67e22;"></i>
+                Nos comunicaremos contigo para coordinar el envío de tu pedido.
+            </div>
+
+            <a asp-controller="Home" asp-action="Index"
+               class="btn fw-bold text-white py-3"
+               style="background:#6b1a2a;border-radius:8px;">
+                <i class="bi bi-shop me-2"></i>SEGUIR COMPRANDO
+            </a>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,175 @@
+﻿@model IEnumerable<SISTEMA_WEB___TIENDA.Models.Clientes>
+@{
+    ViewData["Title"] = "Usuarios del Sistema";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #4a1020 0%, #6b1a2a 60%, #8c2438 100%);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+        .page-header::after {
+            content: '';
+            position: absolute;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+            top: -40px; right: -30px;
+            border-radius: 50%;
+        }
+        .page-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+    .tabla-admin th {
+        background:  #4a1020;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+    }
+    .tabla-admin td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+    .tabla-admin tbody tr:hover { background: #f5f8ff; }
+    .btn-accion {
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: opacity 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+        .btn-accion:hover { opacity: 0.82; }
+    .section-lbl {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin-bottom: 12px;
+    }
+    .rol-badge {
+        border-radius: 6px;
+        padding: 3px 9px;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+</style>
+
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-people me-1"></i>Administración
+        </p>
+        <h4>Usuarios del Sistema</h4>
+    </div>
+    <div style="position:relative;z-index:1;display:flex;gap:8px;">
+        <a asp-action="Create" class="btn btn-sm fw-bold px-3"
+           style="background:#c9a84c;color:#4a1020;border-radius:8px;">
+            <i class="bi bi-plus-lg me-1"></i>Nuevo Usuario
+        </a>
+        <a asp-controller="Login" asp-action="Admin"
+           class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;">
+            <i class="bi bi-arrow-left me-1"></i>Dashboard
+        </a>
+    </div>
+</div>
+
+@if (TempData["OK"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show small py-2 mb-3">
+        <i class="bi bi-check-circle me-1"></i>@TempData["OK"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="section-lbl">@Model.Count() usuario(s) registrado(s)</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-people" style="font-size:2.5rem;color:#ddd;"></i>
+        <p class="mt-2">No hay usuarios registrados.</p>
+        <a asp-action="Create" class="btn btn-sm fw-bold text-white mt-1"
+           style="background:#1a4a8a;border-radius:8px;">
+            <i class="bi bi-plus-lg me-1"></i>Agregar usuario
+        </a>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table tabla-admin align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Ciudad</th>
+                        <th class="text-center pe-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td class="ps-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:34px;height:34px;border-radius:50%;background:#1a4a8a18;
+                                                color:#1a4a8a;display:flex;align-items:center;justify-content:center;
+                                                font-weight:700;font-size:0.85rem;flex-shrink:0;">
+                                        @u.Nombres[0].ToString().ToUpper()
+                                    </div>
+                                    <span class="fw-semibold">@u.Nombres</span>
+                                </div>
+                            </td>
+                            <td style="color:#666;">@u.CorreoElectronico</td>
+                            <td>
+                                @{
+                                    var esAdmin = u.Rol?.NombreRol == "Administrador";
+                                    var bg = esAdmin ? "#6b1a2a18" : "#1a4a8a18";
+                                    var color = esAdmin ? "#6b1a2a" : "#1a4a8a";
+                                }
+                                <span class="rol-badge" style="background:@bg;color:@color;">
+                                    @u.Rol?.NombreRol
+                                </span>
+                            </td>
+                            <td style="color:#666;">@u.Ciudad?.NombreCiudad</td>
+                            <td class="text-center pe-3">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a asp-action="Edit" asp-route-id="@u.ClienteId"
+                                       class="btn-accion text-white" style="background:#c9a84c;">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@u.ClienteId" method="post"
+                                          onsubmit="return confirm('¿Eliminar a @u.Nombres?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-accion text-white"
+                                                style="background:#6b1a2a;">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

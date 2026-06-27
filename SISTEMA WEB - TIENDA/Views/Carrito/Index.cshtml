@@ -1,0 +1,100 @@
+﻿@model IEnumerable<SISTEMA_WEB___TIENDA.Models.CarritoItem>
+
+@{
+    ViewData["Title"] = "Tu Carrito - ALEANA STORE";
+}
+
+<div class="container mt-5">
+    <h2 class="fw-bold mb-4 text-uppercase border-bottom pb-2" style="letter-spacing: 1px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-cart4 me-2" viewBox="0 0 16 16">
+            <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l.5 2H5V5zM6 5v2h2V5zm3 0v2h2V5zm3 0v2h1.36l-.5-2zm1.11 3H11v2h1.06zM10 8H8v2h2zm-3 0H5v2h2zm-4.18 3c.496 0 .918-.328 1.055-.805L4.414 10H12.43l.424 1.695A1.5 1.5 0 0 1 11.415 13H3.01a1.5 1.5 0 0 1-1.422-1.042L.31 4H0V3h1.61L2.24 5H3.14zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2m7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2" />
+        </svg>
+        Bolsa de Compras
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 shadow-sm rounded-3 bg-light border">
+            <h4 class="text-muted mb-3">Tu bolsa de compras está vacía</h4>
+            <p class="text-secondary mb-4">¿Aún no decides qué llevar? Explora nuestras prendas de temporada.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-dark btn-lg fw-bold px-4 rounded-2">
+                VOLVER AL CATÁLOGO
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" class="ps-3">Producto</th>
+                                    <th scope="col" class="text-center">Precio</th>
+                                    <th scope="col" class="text-center">Cantidad</th>
+                                    <th scope="col" class="text-center">Subtotal</th>
+                                    <th scope="col" class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="ps-3">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="@item.ImagenUrl" alt="@item.NombrePrenda" class="rounded-2 border" style="width: 60px; height: 75px; object-fit: cover;" onerror="this.src='https://placehold.co/60x75/e0e0e0/666666?text=Prenda'">
+                                                <div>
+                                                    <h6 class="fw-bold text-dark mb-0">@item.NombrePrenda</h6>
+                                                    <span class="text-muted small">Cód: @item.PrendaId</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center fw-semibold">S/ @item.Precio.ToString("F2")</td>
+                                        <td class="text-center font-monospace">@item.Cantidad</td>
+                                        <td class="text-center fw-bold text-dark">S/ @item.Total.ToString("F2")</td>
+                                        <td class="text-center pe-3">
+                                            <a asp-action="Eliminar" asp-route-prendaId="@item.PrendaId" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Quitar producto">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                                    <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16H4.885a2 2 0 0 1-1.993-1.83L1.992 3.5h-.538a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                                                </svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 rounded-3 p-4 bg-light">
+                    <h5 class="fw-bold mb-3 text-uppercase border-bottom pb-2">Resumen del Pedido</h5>
+
+                    <div class="d-flex justify-content-between mb-2 text-secondary">
+                        <span>Subtotal prendas:</span>
+                        <span class="fw-semibold">@Model.Sum(i => i.Cantidad) und.</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4 fs-5 text-dark border-top pt-2">
+                        <span class="fw-bold">Total a pagar:</span>
+                        <span class="fw-bold text-success">S/ @ViewBag.GranTotal.ToString("F2")</span>
+                    </div>
+
+                    <div class="d-grid">
+                        <form asp-action="Checkout" asp-controller="Carrito" method="get">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-lg fw-bold text-white py-2"
+                                        style="background:#6b1a2a;border-radius:8px;">
+                                    <i class="bi bi-arrow-right-circle me-2"></i>PROCEDER AL PAGO
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>

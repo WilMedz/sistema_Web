@@ -1,0 +1,137 @@
+﻿@model IEnumerable<SISTEMA_WEB___TIENDA.Models.Pedido>
+@{
+    ViewData["Title"] = "Pedidos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+    }
+
+        .page-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .tabla-admin th {
+        background: #4a1020;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    .tabla-admin td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    .tabla-admin tbody tr:hover {
+        background: #fdf8f8;
+    }
+
+    .btn-accion {
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+        .btn-accion:hover {
+            opacity: 0.82;
+        }
+</style>
+
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-receipt me-1"></i>Gestión
+        </p>
+        <h4>Pedidos y Ventas</h4>
+    </div>
+    <a asp-controller="Login" asp-action="Admin"
+       class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;">
+        <i class="bi bi-arrow-left me-1"></i>Dashboard
+    </a>
+</div>
+
+@if (TempData["OK"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show small py-2 mb-3">
+        <i class="bi bi-check-circle me-1"></i>@TempData["OK"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-bag-x" style="font-size:2.5rem;color:#ddd;"></i>
+        <p class="mt-2">No hay pedidos registrados.</p>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table tabla-admin align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">N° Pedido</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Método Pago</th>
+                        <th>Estado</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-center pe-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td class="ps-3 font-monospace fw-bold" style="color:#6b1a2a;">#@p.PedidoId.ToString("D6")</td>
+                            <td style="font-size:0.82rem;">@p.FechaPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@p.Clientes?.Nombres</td>
+                            <td style="font-size:0.82rem;color:#666;">@p.MetodoPago?.DescripcionPago</td>
+                            <td>
+                                <span style="background:rgba(107,26,42,0.07);color:#6b1a2a;border-radius:6px;padding:3px 9px;font-size:0.7rem;font-weight:600;">
+                                    @p.Estado?.NombreEstado
+                                </span>
+                            </td>
+                            <td class="text-end fw-bold">S/ @p.TotalCompra.ToString("N2")</td>
+                            <td class="text-center pe-3">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a asp-action="Detalle" asp-route-id="@p.PedidoId"
+                                       class="btn-accion text-white" style="background:#1a4a8a;">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        <a asp-action="CambiarEstado" asp-route-id="@p.PedidoId"
+                                           class="btn-accion text-white" style="background:#c9a84c;">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

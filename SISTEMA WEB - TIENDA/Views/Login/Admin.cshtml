@@ -1,0 +1,371 @@
+﻿@using SISTEMA_WEB___TIENDA.Models
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var nombre = HttpContextAccessor.HttpContext?.Session.GetString("UsuarioNombre") ?? "Administrador";
+    var stockCrit = ViewBag.StockCritico as List<VariantePrenda> ?? new List<VariantePrenda>();
+}
+
+<style>
+    .dash-header {
+        background: linear-gradient(135deg, #4a1020 0%, #6b1a2a 60%, #8c2438 100%);
+        border-radius: 14px;
+        padding: 28px 32px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .dash-header::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+            top: -60px;
+            right: -40px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .dash-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            margin: 0 0 4px;
+        }
+
+    .stat-card {
+        border: none;
+        border-radius: 12px;
+        padding: 20px 18px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s;
+        min-height: 100px;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card .bg-icon {
+            font-size: 2.8rem;
+            opacity: 0.13;
+            position: absolute;
+            right: 12px;
+            bottom: 6px;
+        }
+
+        .stat-card .val {
+            font-size: 1.75rem;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            line-height: 1.1;
+        }
+
+        .stat-card .lbl {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            opacity: 0.8;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+    .action-card {
+        border: none;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+        padding: 22px;
+    }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(107,26,42,0.13);
+        }
+
+    .action-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        flex-shrink: 0;
+    }
+
+    .section-lbl {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin-bottom: 12px;
+        margin-top: 26px;
+    }
+
+    .btn-accion {
+        width: 100%;
+        border: none;
+        border-radius: 7px;
+        padding: 9px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+        transition: opacity 0.2s;
+        margin-top: auto;
+    }
+
+        .btn-accion:hover {
+            opacity: 0.82;
+        }
+
+    .alerta-stock {
+        background: #fff8f0;
+        border-left: 4px solid #e67e22;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+    }
+
+    @@media (max-width: 576px) {
+        .dash-header {
+            padding: 20px 18px;
+            border-radius: 10px;
+        }
+
+            .dash-header h4 {
+                font-size: 1.25rem;
+            }
+
+        .stat-card {
+            padding: 16px 14px;
+            min-height: 86px;
+        }
+
+            .stat-card .val {
+                font-size: 1.45rem;
+            }
+
+        .action-card {
+            padding: 18px 16px;
+        }
+
+        .section-lbl {
+            margin-top: 20px;
+        }
+    }
+</style>
+
+<!-- HEADER -->
+<div class="dash-header">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-shield-check me-1"></i>Panel de Administración
+        </p>
+        <h4>Bienvenido, @nombre.Split(' ').First()</h4>
+        <small style="color:rgba(255,255,255,0.45);">
+            @DateTime.Now.ToString("dddd dd 'de' MMMM, yyyy", new System.Globalization.CultureInfo("es-PE"))
+        </small>
+    </div>
+    <span class="position-absolute top-0 end-0 m-3 badge px-3 py-2 rounded-pill"
+          style="background:#c9a84c;color:#4a1020;font-size:0.72rem;z-index:1;">
+        <i class="bi bi-person-fill me-1"></i>Administrador
+    </span>
+</div>
+
+<!-- ALERTA STOCK CRÍTICO -->
+@if (stockCrit.Any())
+{
+    <div class="alerta-stock d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill text-warning fs-5 mt-1"></i>
+        <div>
+            <strong style="color:#e67e22;font-size:0.88rem;">
+                Stock Crítico — @stockCrit.Count variante(s) con 3 o menos unidades
+            </strong>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                @foreach (var v in stockCrit)
+                {
+                    <span class="badge" style="background:#e67e2218;color:#c0392b;border:1px solid #e67e2240;font-size:0.71rem;padding:5px 10px;border-radius:6px;">
+                        @v.Prenda?.NombrePrenda — @v.Talla / @v.Color:
+                        <strong>@v.Stock uds.</strong>
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<!-- STATS -->
+<div class="section-lbl mt-0">Resumen General</div>
+<div class="row g-3 mb-2">
+    <div class="col-6 col-sm-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#6b1a2a,#8c2438);">
+            <span class="lbl">Prendas</span>
+            <div class="val">@(ViewBag.TotalPrendas ?? "—")</div>
+            <i class="bi bi-tag-fill bg-icon"></i>
+        </div>
+    </div>
+    <div class="col-6 col-sm-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#c9a84c,#a8893c);">
+            <span class="lbl">Pedidos Hoy</span>
+            <div class="val">@(ViewBag.PedidosHoy ?? "—")</div>
+            <i class="bi bi-cart-check-fill bg-icon"></i>
+        </div>
+    </div>
+    <div class="col-6 col-sm-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#2d6a4f,#1b4332);">
+            <span class="lbl">Clientes</span>
+            <div class="val">@(ViewBag.TotalClientes ?? "—")</div>
+            <i class="bi bi-people-fill bg-icon"></i>
+        </div>
+    </div>
+    <div class="col-6 col-sm-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#1c1c1c,#3d3d3d);">
+            <span class="lbl">Ventas Mes</span>
+            <div class="val">
+                @(ViewBag.VentasMes != null
+                    ? $"S/ {((decimal)ViewBag.VentasMes).ToString("N0")}"
+                    : "S/ —")
+            </div>
+            <i class="bi bi-graph-up-arrow bg-icon"></i>
+        </div>
+    </div>
+</div>
+
+<!-- GESTIÓN PRINCIPAL -->
+<div class="section-lbl">Gestión Principal</div>
+<div class="row g-3">
+    <div class="col-12 col-sm-6 col-md-3 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#6b1a2a18;color:#6b1a2a;"><i class="bi bi-tag-fill"></i></div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Prendas</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">Alta, edición y precios de temporada.</p>
+            <a asp-controller="Prendas" asp-action="Index" class="btn-accion" style="background:#6b1a2a;color:white;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Gestionar
+            </a>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#c9a84c22;color:#c9a84c;"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Variantes y Stock</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">Tallas, colores e inventario físico.</p>
+            <a asp-controller="VariantesPrenda" asp-action="Index" class="btn-accion" style="background:#c9a84c;color:#4a1020;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Controlar
+            </a>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#1a4a8a22;color:#1a4a8a;"><i class="bi bi-people-fill"></i></div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Usuarios</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">Administrar cajeros y accesos.</p>
+            <a asp-controller="Usuarios" asp-action="Index" class="btn-accion" style="background:#1a4a8a;color:white;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Administrar
+            </a>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#2d6a4f22;color:#2d6a4f;"><i class="bi bi-truck"></i></div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Proveedores</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">Gestión de proveedores.</p>
+            <a asp-controller="Proveedores" asp-action="Index" class="btn-accion" style="background:#2d6a4f;color:white;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Ver Lista
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-12 col-sm-6 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#4a102022;color:#4a1020;"><i class="bi bi-receipt-cutoff"></i></div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Pedidos y Ventas</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">Órdenes, estados de pago y despacho.</p>
+            <a asp-controller="Pedidos" asp-action="Index" class="btn-accion" style="background:#4a1020;color:white;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Ver Órdenes
+            </a>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#19875422;color:#198754;"><i class="bi bi-bar-chart-line-fill"></i></div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Reportes de Ventas</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">Ganancias por día, mes o año.</p>
+            <a asp-controller="Reportes" asp-action="Index" class="btn-accion" style="background:#198754;color:white;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Ver Reportes
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIGURACIÓN -->
+<div class="section-lbl">Configuración General</div>
+<div class="row g-3">
+    <div class="col-12 col-sm-6 col-md-4 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#6b1a2a18;color:#6b1a2a;">
+                <i class="bi bi-collection"></i>
+            </div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Categorías</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">
+                Organiza las prendas por tipo de prenda.
+            </p>
+            <a asp-controller="Categorias" asp-action="Index"
+                   class="btn-accion" style="background:#6b1a2a;color:white;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Gestionar
+            </a>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-4 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#c9a84c22;color:#c9a84c;">
+                <i class="bi bi-bookmark-fill"></i>
+            </div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Marcas</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">
+                Administra las marcas disponibles en tienda.
+            </p>
+            <a asp-controller="Marcas" asp-action="Index"
+                   class="btn-accion" style="background:#c9a84c;color:#4a1020;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Gestionar
+            </a>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-4 d-flex">
+        <div class="action-card w-100 d-flex flex-column">
+            <div class="action-icon" style="background:#19875422;color:#198754;">
+                <i class="bi bi-credit-card-fill"></i>
+            </div>
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;">Métodos de Pago</h6>
+            <p class="text-muted mb-3" style="font-size:0.78rem;flex:1;">
+                Configura Yape, tarjeta, efectivo y más.
+            </p>
+            <a asp-controller="MetodosPago" asp-action="Index"
+                   class="btn-accion" style="background:#198754;color:white;">
+                <i class="bi bi-arrow-right-circle me-1"></i>Gestionar
+            </a>
+        </div>
+    </div>
+</div>

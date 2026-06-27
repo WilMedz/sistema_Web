@@ -1,0 +1,177 @@
+﻿@model SISTEMA_WEB___TIENDA.Models.Proveedor
+@{
+    ViewData["Title"] = "Nuevo Proveedor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+    }
+
+        .form-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        padding: 28px;
+    }
+
+    .field-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .field-input {
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid #ddd;
+        border-radius: 0;
+        padding: 9px 0;
+        font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        background: transparent;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+        .field-input:focus {
+            border-bottom-color: #6b1a2a;
+        }
+
+    .section-divider {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin: 24px 0 16px;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 8px;
+    }
+
+    .btn-guardar {
+        background: #6b1a2a;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 28px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .btn-guardar:hover {
+            background: #4a1020;
+        }
+
+    .btn-cancelar {
+        background: transparent;
+        color: #888;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 11px 20px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-cancelar:hover {
+            border-color: #6b1a2a;
+            color: #6b1a2a;
+        }
+
+    .form-check-input:checked {
+        background-color: #6b1a2a;
+        border-color: #6b1a2a;
+    }
+</style>
+
+<div class="form-header">
+    <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+        <i class="bi bi-truck me-1"></i>Proveedores
+    </p>
+    <h4>Nuevo Proveedor</h4>
+</div>
+
+<div class="form-card">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 mb-3"></div>
+
+        <div class="section-divider">Datos de la Empresa</div>
+        <div class="row g-4">
+            <div class="col-md-8">
+                <label class="field-label">Razón Social</label>
+                <input asp-for="RazonSocial" class="field-input" placeholder="Ej: Textiles CAX S.A.C." />
+                <span asp-validation-for="RazonSocial" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="field-label">RUC</label>
+                <input asp-for="RUC" class="field-input" placeholder="Ej: 20601234567" maxlength="11" />
+                <span asp-validation-for="RUC" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-md-8">
+                <label class="field-label">Dirección</label>
+                <input asp-for="Direccion" class="field-input" placeholder="Ej: Urb. Santa Victoria - Chiclayo" />
+                <span asp-validation-for="Direccion" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-md-4 d-flex flex-column justify-content-end">
+                <label class="field-label">Estado</label>
+                <div class="d-flex align-items-center gap-2 pb-2">
+                    <input asp-for="Activo" class="form-check-input mt-0" type="checkbox" checked />
+                    <span style="font-size:0.85rem;color:#555;">Proveedor activo</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider">Contacto</div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <label class="field-label">Persona de Contacto</label>
+                <input asp-for="Contacto" class="field-input" placeholder="Ej: Juan Perez" />
+                <span asp-validation-for="Contacto" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="field-label">Teléfono</label>
+                <input asp-for="Telefono" class="field-input" placeholder="Ej: 987654321" />
+                <span asp-validation-for="Telefono" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="field-label">Correo Electrónico</label>
+                <input asp-for="Correo" class="field-input" placeholder="proveedor@empresa.com" />
+                <span asp-validation-for="Correo" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn-guardar">
+                <i class="bi bi-check-lg me-2"></i>REGISTRAR PROVEEDOR
+            </button>
+            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

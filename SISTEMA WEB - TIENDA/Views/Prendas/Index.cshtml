@@ -1,0 +1,232 @@
+﻿@model IEnumerable<SISTEMA_WEB___TIENDA.Models.Prenda>
+@{
+    ViewData["Title"] = "Catálogo de Prendas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #4a1020 0%, #6b1a2a 60%, #8c2438 100%);
+        border-radius: 14px;
+        padding: 24px 28px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+            top: -50px;
+            right: -30px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .page-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+    .tabla-admin th {
+        background: #4a1020;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+    }
+
+    .tabla-admin td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    .tabla-admin tbody tr:hover {
+        background: #fdf8f8;
+    }
+
+    .btn-accion {
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: opacity 0.2s;
+    }
+
+        .btn-accion:hover {
+            opacity: 0.82;
+        }
+
+    .badge-oferta {
+        background: #6b1a2a18;
+        color: #6b1a2a;
+        border: 1px solid #6b1a2a40;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        font-weight: 600;
+    }
+
+    .alerta-stock {
+        background: #fff8f0;
+        border-left: 4px solid #e67e22;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+    }
+
+    .section-lbl {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin-bottom: 12px;
+    }
+</style>
+
+<!-- HEADER -->
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-tag me-1"></i>Administración
+        </p>
+        <h4>Catálogo de Prendas</h4>
+    </div>
+    <div style="position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap;">
+        <a asp-action="Create" class="btn btn-sm fw-bold px-3"
+           style="background:#c9a84c;color:#4a1020;border-radius:8px;">
+            <i class="bi bi-plus-lg me-1"></i>Nueva Prenda
+        </a>
+        <a asp-controller="Login" asp-action="Admin"
+           class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;">
+            <i class="bi bi-arrow-left me-1"></i>Dashboard
+        </a>
+    </div>
+</div>
+
+@if (TempData["OK"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show small py-2 mb-3" role="alert">
+        <i class="bi bi-check-circle me-1"></i>@TempData["OK"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- STOCK CRÍTICO -->
+@{
+    var stockCrit = ViewBag.StockCritico as List<SISTEMA_WEB___TIENDA.Models.VariantePrenda>
+                    ?? new List<SISTEMA_WEB___TIENDA.Models.VariantePrenda>();
+}
+@if (stockCrit.Any())
+{
+    <div class="alerta-stock d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill text-warning fs-5 mt-1"></i>
+        <div>
+            <strong style="color:#e67e22;font-size:0.85rem;">
+                Stock Crítico — @stockCrit.Count variante(s) con 3 o menos unidades
+            </strong>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                @foreach (var v in stockCrit)
+                {
+                    <span style="background:#e67e2218;color:#c0392b;border:1px solid #e67e2240;font-size:0.7rem;padding:4px 9px;border-radius:6px;font-weight:600;">
+                        @v.Prenda?.NombrePrenda — @v.Talla/@v.Color: <strong>@v.Stock uds.</strong>
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<!-- TABLA -->
+<div class="section-lbl">@Model.Count() prenda(s) registrada(s)</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-inbox" style="font-size:2.5rem;color:#ddd;"></i>
+        <p class="mt-2">No hay prendas registradas aún.</p>
+        <a asp-action="Create" class="btn btn-sm fw-bold text-white mt-1" style="background:#6b1a2a;border-radius:8px;">
+            <i class="bi bi-plus-lg me-1"></i>Agregar primera prenda
+        </a>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table tabla-admin align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">Imagen</th>
+                        <th>Prenda</th>
+                        <th>Marca</th>
+                        <th>Categoría</th>
+                        <th class="text-end">Precio Lista</th>
+                        <th class="text-end">Oferta</th>
+                        <th class="text-center pe-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td class="ps-3">
+                                <img src="@p.ImagenPrincipalUrl" alt="@p.NombrePrenda"
+                                     style="width:48px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #eee;"
+                                     onerror="this.src='https://placehold.co/48x60/f5f0ee/999?text=?'">
+                            </td>
+                            <td>
+                                <span class="fw-semibold" style="color:#1c1c1c;">@p.NombrePrenda</span>
+                                <br>
+                                <small class="text-muted" style="font-size:0.72rem;">ID: @p.PrendaId</small>
+                            </td>
+                            <td>@p.Marca?.NombreMarca</td>
+                            <td>
+                                <span style="background:#6b1a2a12;color:#6b1a2a;border-radius:6px;padding:3px 8px;font-size:0.72rem;font-weight:600;">
+                                    @p.Categoria?.NombreCategoria
+                                </span>
+                            </td>
+                            <td class="text-end fw-semibold">S/ @p.PrecioLista.ToString("N2")</td>
+                            <td class="text-end">
+                                @if (p.PrecioOferta.HasValue && p.PrecioOferta < p.PrecioLista)
+                                {
+                                    <span class="badge-oferta">S/ @p.PrecioOferta.Value.ToString("N2")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">—</span>
+                                }
+                            </td>
+                            <td class="text-center pe-3">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a asp-action="Edit" asp-route-id="@p.PrendaId"
+                                       class="btn-accion text-white" style="background:#c9a84c;">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@p.PrendaId" method="post"
+                                          onsubmit="return confirm('¿Eliminar «@p.NombrePrenda»? Esta acción no se puede deshacer.')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-accion text-white" style="background:#6b1a2a;">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

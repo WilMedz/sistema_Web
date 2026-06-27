@@ -1,0 +1,207 @@
+﻿@model SISTEMA_WEB___TIENDA.ViewModels.CheckoutVM
+@{
+    ViewData["Title"] = "Confirmar Pedido";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .checkout-header {
+        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+    }
+
+        .checkout-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .checkout-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        padding: 28px;
+    }
+
+    .field-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .field-input {
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid #ddd;
+        padding: 9px 0;
+        font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        background: transparent;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+        .field-input:focus {
+            border-bottom-color: #6b1a2a;
+        }
+
+    .section-divider {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin: 24px 0 16px;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 8px;
+    }
+
+    .resumen-box {
+        background: #faf9f7;
+        border-radius: 10px;
+        border: 1px solid #ede8e0;
+        padding: 20px;
+    }
+
+    .btn-confirmar {
+        width: 100%;
+        background: #6b1a2a;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 14px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .btn-confirmar:hover {
+            background: #4a1020;
+        }
+
+    .metodo-card {
+        border: 1.5px solid #eee;
+        border-radius: 8px;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 8px;
+    }
+
+        .metodo-card:has(input:checked) {
+            border-color: #6b1a2a;
+            background: #6b1a2a08;
+        }
+</style>
+
+<div class="checkout-header">
+    <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+        <i class="bi bi-bag-check me-1"></i>Carrito
+    </p>
+    <h4>Confirmar Pedido</h4>
+</div>
+
+<form asp-action="Checkout" asp-controller="Carrito" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="row g-4">
+
+        <!-- FORMULARIO -->
+        <div class="col-lg-7">
+            <div class="checkout-card">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 mb-3"></div>
+
+                <div class="section-divider">Dirección de Envío</div>
+                <p class="text-muted small mb-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Tu pedido será coordinado para envío a través de courier.
+                    Ingresa la dirección donde deseas recibir tu paquete.
+                </p>
+
+                <div class="mb-4">
+                    <label class="field-label">Calle / Avenida</label>
+                    <input asp-for="CalleAvenida" class="field-input" placeholder="Ej: Jr. Amazonas 456" />
+                    <span asp-validation-for="CalleAvenida" class="text-danger" style="font-size:0.72rem;"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="field-label">Distrito / Ciudad</label>
+                    <input asp-for="Distrito" class="field-input" placeholder="Ej: Cajamarca, Baños del Inca..." />
+                    <span asp-validation-for="Distrito" class="text-danger" style="font-size:0.72rem;"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="field-label">Referencia</label>
+                    <input asp-for="Referencia" class="field-input" placeholder="Ej: Frente al mercado, casa azul..." />
+                    <span asp-validation-for="Referencia" class="text-danger" style="font-size:0.72rem;"></span>
+                </div>
+
+                <div class="section-divider">Método de Pago</div>
+
+                @foreach (var metodo in (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.MetodosPago)
+                {
+                    <label class="metodo-card d-flex align-items-center gap-3 w-100">
+                        <input type="radio" name="MetodoPagoId" value="@metodo.Value"
+                        @(metodo.Selected ? "checked" : "") style="accent-color:#6b1a2a;" />
+                        <div>
+                            <div class="fw-semibold" style="font-size:0.88rem;">@metodo.Text</div>
+                        </div>
+                    </label>
+                }
+                <span asp-validation-for="MetodoPagoId" class="text-danger" style="font-size:0.72rem;"></span>
+
+            </div>
+        </div>
+
+        <!-- RESUMEN -->
+        <div class="col-lg-5">
+            <div class="checkout-card">
+                <h6 style="font-family:'Playfair Display',serif;font-weight:600;margin-bottom:16px;">
+                    Resumen del Pedido
+                </h6>
+
+                <div class="resumen-box mb-4">
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Productos (@ViewBag.TotalItems unidades)</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-top pt-2 mt-2">
+                        <span class="fw-bold">Total a pagar</span>
+                        <span class="fw-bold" style="color:#6b1a2a;font-size:1.1rem;">
+                            S/ @ViewBag.GranTotal.ToString("F2")
+                        </span>
+                    </div>
+                </div>
+
+                <div class="alert" style="background:#fff8f0;border:1px solid #e67e2240;border-radius:8px;font-size:0.78rem;color:#666;">
+                    <i class="bi bi-truck me-2" style="color:#e67e22;"></i>
+                    El envío será coordinado directamente contigo después de confirmar el pedido.
+                </div>
+
+                <button type="submit" class="btn-confirmar mt-2">
+                    <i class="bi bi-check-circle me-2"></i>CONFIRMAR PEDIDO
+                </button>
+
+                <a asp-action="Index" class="d-block text-center mt-3 small text-muted text-decoration-none">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al carrito
+                </a>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

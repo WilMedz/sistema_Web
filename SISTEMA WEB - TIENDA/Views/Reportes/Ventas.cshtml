@@ -1,0 +1,215 @@
+﻿@model IEnumerable<SISTEMA_WEB___TIENDA.ViewModels.ReporteVentasVM>
+@{
+    ViewData["Title"] = "Reporte de Ventas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    decimal totalGeneral = ViewBag.TotalGeneral ?? 0m;
+    int pedidosTotal = ViewBag.PedidosTotal ?? 0;
+    int productosTotal = ViewBag.ProductosTotal ?? 0;
+    string mejorMes = ViewBag.MejorMes ?? "—";
+    decimal mejorMonto = ViewBag.MejorMonto ?? 0m;
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #4a1020 0%, #6b1a2a 60%, #8c2438 100%);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+            top: -40px;
+            right: -30px;
+            border-radius: 50%;
+        }
+
+        .page-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .metrica-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        padding: 20px 22px;
+        height: 100%;
+        border-left: 4px solid #6b1a2a;
+    }
+
+    .metrica-label {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin-bottom: 6px;
+    }
+
+    .metrica-valor {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: #6b1a2a;
+        line-height: 1;
+    }
+
+    .metrica-sub {
+        font-size: 0.75rem;
+        color: #aaa;
+        margin-top: 4px;
+    }
+
+    .tabla-admin th {
+        background: #4a1020;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+    }
+
+    .tabla-admin td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    .tabla-admin tbody tr:hover {
+        background: #fdf8f8;
+    }
+
+    .barra-wrap {
+        background: #f0f0f0;
+        border-radius: 999px;
+        height: 8px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .barra-fill {
+        height: 8px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #6b1a2a, #c9a84c);
+        transition: width 0.6s ease;
+    }
+
+    .section-lbl {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin: 24px 0 12px;
+    }
+</style>
+
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-bar-chart-line me-1"></i>Administración
+        </p>
+        <h4>Reporte de Ventas</h4>
+    </div>
+    <a asp-controller="Login" asp-action="Admin"
+       class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;position:relative;z-index:1;">
+        <i class="bi bi-arrow-left me-1"></i>Dashboard
+    </a>
+</div>
+
+<!-- MÉTRICAS -->
+<div class="row g-3 mb-2">
+    <div class="col-6 col-md-3">
+        <div class="metrica-card">
+            <div class="metrica-label"><i class="bi bi-currency-dollar me-1"></i>Total de Ventas</div>
+            <div class="metrica-valor">S/ @totalGeneral.ToString("N2")</div>
+            <div class="metrica-sub">todos los meses</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="metrica-card" style="border-left-color:#c9a84c;">
+            <div class="metrica-label"><i class="bi bi-bag-check me-1"></i>Total Pedidos</div>
+            <div class="metrica-valor" style="color:#c9a84c;">@pedidosTotal</div>
+            <div class="metrica-sub">pedidos completados</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="metrica-card" style="border-left-color:#1a4a8a;">
+            <div class="metrica-label"><i class="bi bi-box-seam me-1"></i>Productos Vendidos</div>
+            <div class="metrica-valor" style="color:#1a4a8a;">@productosTotal</div>
+            <div class="metrica-sub">total de uniades</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="metrica-card" style="border-left-color:#065f46;">
+            <div class="metrica-label"><i class="bi bi-trophy me-1"></i>Mejor Mes</div>
+            <div class="metrica-valor" style="color:#065f46;font-size:1.1rem;padding-top:6px;">@mejorMes</div>
+            <div class="metrica-sub">S/ @mejorMonto.ToString("N2")</div>
+        </div>
+    </div>
+</div>
+
+<!-- TABLA -->
+<div class="section-lbl">Desglose por mes</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-bar-chart" style="font-size:2.5rem;color:#ddd;"></i>
+        <p class="mt-2">Aún no se han registrado ventas.</p>
+    </div>
+}
+else
+{
+    var maxMonto = Model.Max(r => r.MontoTotal);
+
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table tabla-admin align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">Mes</th>
+                        <th class="text-center">Pedidos</th>
+                        <th class="text-center">Productos</th>
+                        <th class="text-end">Monto Total</th>
+                        <th style="width:200px;">Proporción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        var pct = maxMonto > 0 ? (double)(r.MontoTotal / maxMonto) * 100 : 0;
+                        <tr>
+                            <td class="ps-3 fw-semibold text-capitalize">@r.Mes</td>
+                            <td class="text-center">@r.TotalPedidos</td>
+                            <td class="text-center">@r.TotalProductos</td>
+                            <td class="text-end fw-bold" style="color:#6b1a2a;">S/ @r.MontoTotal.ToString("N2")</td>
+                            <td>
+                                <div class="barra-wrap">
+                                    <div class="barra-fill" style="width:@pct.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr style="background:#faf9f7;">
+                        <td class="ps-3 fw-bold" style="font-size:0.82rem;">TOTAL</td>
+                        <td class="text-center fw-bold">@pedidosTotal</td>
+                        <td class="text-center fw-bold">@productosTotal</td>
+                        <td class="text-end fw-bold" style="color:#6b1a2a;">S/ @totalGeneral.ToString("N2")</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+}

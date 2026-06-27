@@ -1,0 +1,235 @@
+﻿@model SISTEMA_WEB___TIENDA.ViewModels.LoginVM
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = null; //usamos pantalla divi
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión — ALEANA STORE</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+
+        .login-wrapper { display: flex; height: 100vh; }
+
+        .login-left {
+            width: 420px;
+            min-width: 360px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 48px 44px;
+            z-index: 2;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+        }
+
+        .login-left .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #6b1a2a;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+        .login-left .subtitle {
+            font-size: 0.8rem;
+            color: #999;
+            letter-spacing: 0.5px;
+            margin-bottom: 36px;
+        }
+
+        .form-label-custom {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            border: none;
+            border-bottom: 1.5px solid #ddd;
+            border-radius: 0;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            background: transparent;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .form-control-custom:focus {
+            border-bottom-color: #6b1a2a;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: #6b1a2a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 13px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .btn-login:hover { background: #4a1020; }
+
+        .link-registro {
+            font-size: 0.8rem;
+            color: #999;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .link-registro a {
+            color: #6b1a2a;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .link-registro a:hover { text-decoration: underline; }
+
+        .alert-error {
+            background: #fdf0f2;
+            border: 1px solid #f0c6cc;
+            border-radius: 8px;
+            color: #6b1a2a;
+            font-size: 0.8rem;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+        }
+        .alert-success-custom {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            color: #166534;
+            font-size: 0.8rem;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Panel derecho — gradiente */
+        .login-right {
+            flex: 1;
+            background: linear-gradient(135deg, #4a1020 0%, #6b1a2a 40%, #8c2438 70%, #c9a84c 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-right::before {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(201,168,76,0.25) 0%, transparent 70%);
+            top: -100px; right: -100px;
+            border-radius: 50%;
+        }
+        .login-right::after {
+            content: '';
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            bottom: -80px; left: -80px;
+            border-radius: 50%;
+        }
+        .login-right .welcome-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            z-index: 1;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .login-right .welcome-sub {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            z-index: 1;
+            text-align: center;
+            max-width: 300px;
+        }
+
+        @@media (max-width: 768px) {
+            .login-right { display: none; }
+            .login-left { width: 100%; min-width: unset; }
+        }
+    </style>
+</head>
+<body>
+<div class="login-wrapper">
+
+    <!-- FORMULARIO -->
+    <div class="login-left">
+        <div class="brand">ALEANA</div>
+        <div class="subtitle">STORE — CAJAMARCA</div>
+
+        @if (TempData["MensajeRegistro"] != null)
+        {
+            <div class="alert-success-custom">
+                <i class="bi bi-check-circle me-1"></i>@TempData["MensajeRegistro"]
+            </div>
+        }
+
+        <form asp-action="Login" asp-controller="Login" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="alert-error"></div>
+
+            <div class="mb-4">
+                <label class="form-label-custom">Correo Electrónico</label>
+                <input asp-for="Correo" class="form-control-custom" placeholder="correo@ejemplo.com" autocomplete="username" />
+                <span asp-validation-for="Correo" class="text-danger" style="font-size:0.75rem;"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label-custom">Contraseña</label>
+                <input asp-for="Password" type="password" class="form-control-custom" placeholder="••••••••" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="text-danger" style="font-size:0.75rem;"></span>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="bi bi-box-arrow-in-right me-2"></i>INGRESAR
+            </button>
+        </form>
+
+        <div class="link-registro">
+            ¿Nuevo cliente? <a asp-action="Registro" asp-controller="Login">Crea tu cuenta aquí</a>
+        </div>
+
+        <div style="margin-top:32px; text-align:center;">
+            <small style="color:#ccc; font-size:0.7rem;">
+                <i class="bi bi-shield-lock me-1"></i>Conexión segura · © 2026 Aleana Store
+            </small>
+        </div>
+    </div>
+
+
+    <div class="login-right">
+        <div class="welcome-text">Bienvenida.</div>
+        <div class="welcome-sub">Moda exclusiva para cada temporada en Cajamarca.</div>
+    </div>
+
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+</body>
+</html>
