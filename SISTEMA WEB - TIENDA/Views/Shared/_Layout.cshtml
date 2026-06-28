@@ -89,7 +89,7 @@
                     border-radius: 20px;
                     padding: 7px 16px;
                     font-size: 0.82rem;
-                    width: 220px;
+                    width: 260px;
                     font-family: 'Inter', sans-serif;
                     transition: all 0.2s;
                     background: #faf9f7;
@@ -100,6 +100,83 @@
                         border-color: var(--granate);
                         box-shadow: 0 0 0 3px rgba(107,26,42,0.08);
                     }
+
+            /* DISEÑO DE LA LISTA DESPLEGABLE PREDICTIVA */
+            .search-wrapper {
+                position: relative;
+                width: 260px;
+            }
+
+            .search-dropdown {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+                max-height: 320px;
+                overflow-y: auto;
+                z-index: 1100;
+                margin-top: 5px;
+                display: none;
+            }
+
+            .search-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 14px;
+                text-decoration: none;
+                color: var(--text);
+                border-bottom: 1px solid #f5f5f5;
+                transition: background 0.15s;
+            }
+
+                .search-item:last-child {
+                    border-bottom: none;
+                }
+
+                .search-item:hover {
+                    background: rgba(107,26,42,0.04);
+                    color: var(--granate);
+                }
+
+                .search-item img {
+                    width: 40px;
+                    height: 40px;
+                    object-fit: cover;
+                    border-radius: 4px;
+                    background: #f0f0f0;
+                }
+
+                .search-item .info {
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                }
+
+                .search-item .title {
+                    font-size: 0.8rem;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .search-item .price {
+                    font-size: 0.75rem;
+                    color: var(--granate-soft);
+                    font-weight: 600;
+                }
+
+            .search-no-results {
+                padding: 14px;
+                text-align: center;
+                font-size: 0.8rem;
+                color: #888;
+            }
 
             .btn-bolsa {
                 background: var(--granate);
@@ -148,19 +225,22 @@
 </head>
 <body>
 
-    <!-- TOP BAR -->
     <div class="topbar">
         Envíos a Cajamarca y toda la región &nbsp;·&nbsp; Lunes a Sábado 9am – 7pm
     </div>
 
-    <!-- NAVBAR -->
     <nav class="navbar-aleana">
         <div class="container d-flex align-items-center gap-3">
 
             <a href="/" class="brand">ALEANA</a>
 
             <div class="flex-grow-1 d-none d-lg-flex justify-content-center">
-                <input type="text" class="search-box" placeholder="🔍  Buscar prendas...">
+                <div class="search-wrapper">
+                    <form asp-controller="Home" asp-action="Index" method="get" class="m-0" id="form-busqueda">
+                        <input type="text" id="input-buscar" name="buscar" class="search-box" autocomplete="off" placeholder="🔍  Buscar prendas..." value="@Context.Request.Query["buscar"]">
+                    </form>
+                    <div id="resultados-busqueda" class="search-dropdown"></div>
+                </div>
             </div>
 
             <div class="d-flex align-items-center gap-1 ms-auto">
@@ -189,7 +269,6 @@
                     }
                     else
                     {
-                        <!-- Enlaces del cliente / por defecto -->
                         <a asp-controller="Home" asp-action="Index" class="nav-link-item">
                             <i class="bi bi-grid"></i>
                             <span class="d-none d-md-inline ms-1">Catálogo</span>
@@ -214,7 +293,6 @@
                         </button>
                     </form>
 
-                    @* Bolsa apuntando a su controlador y vista originales *@
                     @if (rol == "Cliente" || rol == "")
                     {
                         <a asp-controller="Carrito" asp-action="Index" class="btn-bolsa position-relative ms-2">
@@ -258,6 +336,63 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const inputBuscar = document.getElementById("input-buscar");
+                const resultadosDiv = document.getElementById("resultados-busqueda");
+
+                if (inputBuscar && resultadosDiv) {
+                    inputBuscar.addEventListener("input", function () {
+                        const query = inputBuscar.value.trim();
+
+                        if (query.length < 2) {
+                            resultadosDiv.innerHTML = "";
+                            resultadosDiv.style.display = "none";
+                            return;
+                        }
+
+                        // Petición AJAX en vivo al controlador
+                        fetch(`/Home/BuscarSugerencias?term=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                resultadosDiv.innerHTML = "";
+                                if (data.length === 0) {
+                                    resultadosDiv.innerHTML = '<div class="search-no-results">No se encontraron prendas</div>';
+                                } else {
+                                    data.forEach(item => {
+                                        const a = document.createElement("a");
+                                        a.href = `/Home/Index?buscar=${encodeURIComponent(item.nombre)}`;
+                                        a.className = "search-item";
+                                    
+                                        // Validamos si tiene imagen, sino ponemos una por defecto
+                                        const imgUrl = item.imagen ? item.imagen : '/images/no-image.png';
+                                    
+                                        a.innerHTML = `
+                                            <img src="${imgUrl}" alt="${item.nombre}">
+                                            <div class="info">
+                                                <span class="title">${item.nombre}</span>
+                                                <span class="price">S/ ${item.precio.toFixed(2)}</span>
+                                            </div>
+                                        `;
+                                        resultadosDiv.appendChild(a);
+                                    });
+                                }
+                                resultadosDiv.style.display = "block";
+                            })
+                            .catch(err => console.error("Error en autocompletado:", err));
+                    });
+
+                    // Cerrar la lista si se hace clic fuera del buscador
+                    document.addEventListener("click", function (e) {
+                        if (!inputBuscar.contains(e.target) && !resultadosDiv.contains(e.target)) {
+                            resultadosDiv.style.display = "none";
+                        }
+                    });
+                }
+            });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
