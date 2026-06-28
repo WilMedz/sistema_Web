@@ -1,0 +1,127 @@
+﻿@model SISTEMA_WEB___TIENDA.Models.Pedido
+@{
+    ViewData["Title"] = "Detalle de mi Pedido";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+    }
+    .page-header h4 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin: 0; }
+
+    .info-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        padding: 22px;
+        margin-bottom: 16px;
+    }
+
+    .field-lbl {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #aaa;
+        margin-bottom: 3px;
+    }
+
+    .field-val { font-size: 0.9rem; font-weight: 500; color: #1c1c1c; }
+
+    .tabla-det th {
+        background: #4a1020;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+    }
+    .tabla-det td { font-size: 0.875rem; vertical-align: middle; }
+</style>
+
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-receipt me-1"></i>Mi Cuenta
+        </p>
+        <h4>Pedido #@Model.PedidoId.ToString("D6")</h4>
+    </div>
+    <a asp-action="Index" class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;">
+        <i class="bi bi-arrow-left me-1"></i>Volver a mi perfil
+    </a>
+</div>
+
+<div class="row g-3 mb-3">
+    <!-- Información Principal -->
+    <div class="col-md-6">
+        <div class="info-card">
+            <div class="field-lbl">Fecha del Pedido</div>
+            <div class="field-val">@Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</div>
+            <div class="field-lbl mt-2">Método de Pago</div>
+            <div class="field-val">@Model.MetodoPago?.DescripcionPago</div>
+        </div>
+    </div>
+    <!-- Estado y Total -->
+    <div class="col-md-6">
+        <div class="info-card">
+            <div class="field-lbl">Estado Actual</div>
+            <div class="field-val">
+                <span style="background:#6b1a2a12;color:#6b1a2a;border-radius:6px;padding:4px 10px;font-size:0.82rem;font-weight:600;">
+                    @Model.Estado?.NombreEstado
+                </span>
+            </div>
+            <div class="field-lbl mt-2">Total</div>
+            <div class="field-val fw-bold" style="color:#6b1a2a;font-size:1.1rem;">S/ @Model.TotalCompra.ToString("N2")</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <!-- Dirección de Envío -->
+    <div class="col-md-6">
+        <div class="info-card">
+            <div class="field-lbl">Dirección de Envío</div>
+            <div class="field-val">@Model.DireccionEnvio?.CalleAvenida</div>
+            <div class="field-val" style="font-size:0.82rem;color:#666;">@Model.DireccionEnvio?.Distrito</div>
+            <div class="field-val" style="font-size:0.82rem;color:#666;">Ref: @Model.DireccionEnvio?.Referencia</div>
+        </div>
+    </div>
+</div>
+
+<div class="info-card">
+    <h6 style="font-family:'Playfair Display',serif;font-weight:600;margin-bottom:16px;">Detalle de Productos</h6>
+    <div class="table-responsive">
+        <table class="table tabla-det align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">Prenda</th>
+                    <th>Talla / Color</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-end">Precio Unit.</th>
+                    <th class="text-end pe-3">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in Model.Detalles)
+                {
+                    <tr>
+                        <td class="ps-3 fw-semibold">@d.Variante?.Prenda?.NombrePrenda</td>
+                        <td style="font-size:0.82rem;color:#666;">@d.Variante?.Talla / @d.Variante?.Color</td>
+                        <td class="text-center">@d.Cantidad</td>
+                        <td class="text-end">S/ @d.PrecioUnitario.ToString("N2")</td>
+                        <td class="text-end pe-3 fw-bold">S/ @((d.Cantidad * d.PrecioUnitario).ToString("N2"))</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr style="background:#faf9f7;">
+                    <td colspan="4" class="text-end fw-bold" style="font-size:0.85rem;">TOTAL:</td>
+                    <td class="text-end pe-3 fw-bold" style="color:#6b1a2a;">S/ @Model.TotalCompra.ToString("N2")</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

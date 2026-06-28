@@ -1,0 +1,137 @@
+﻿@model SISTEMA_WEB___TIENDA.ViewModels.PerfilViewModel
+@{
+    ViewData["Title"] = "Mi Perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+        border-radius: 14px;
+        padding: 24px 28px;
+        color: white;
+        margin-bottom: 24px;
+    }
+
+        .profile-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .info-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+
+    .tabla-pedidos th {
+        background: #4a1020;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+    }
+
+    .tabla-pedidos td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    .btn-ver-detalle {
+        background: #1a4a8a;
+        color: white;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+        .btn-ver-detalle:hover {
+            opacity: 0.8;
+            color: white;
+        }
+</style>
+
+<div class="profile-header">
+    <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+        <i class="bi bi-person-circle me-1"></i>Mi Cuenta
+    </p>
+    <h4>Bienvenido, @Model.NombreUsuario</h4>
+    <small style="color:rgba(255,255,255,0.45);">@Model.Email</small>
+</div>
+
+<!-- Información Personal Resumida -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="info-card">
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;margin-bottom:10px;">Mis Datos</h6>
+            <div class="field-val" style="font-size:0.9rem;">@Model.NombreUsuario</div>
+            <div class="field-val" style="font-size:0.82rem;color:#666;">@Model.Email</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="info-card">
+            <h6 style="font-family:'Playfair Display',serif;font-weight:600;margin-bottom:10px;">Mi Bolsa</h6>
+            <div class="field-val" style="font-size:0.9rem;">@Model.Carrito.Count producto(s)</div>
+            <a asp-controller="Carrito" asp-action="Index" class="btn btn-sm fw-bold text-white mt-2" style="background:#6b1a2a;border-radius:8px;">
+                <i class="bi bi-bag me-1"></i>Ver mi Bolsa
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Historial de Pedidos -->
+<h5 style="font-family:'Playfair Display',serif;font-weight:600;margin-bottom:16px;">Mi Historial de Pedidos</h5>
+
+@if (!Model.HistorialPedidos.Any())
+{
+    <div class="text-center py-4 text-muted">
+        <i class="bi bi-clock-history" style="font-size:2rem;color:#ddd;"></i>
+        <p class="mt-2">Aún no has realizado ningún pedido.</p>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table tabla-pedidos align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">N° Pedido</th>
+                        <th>Fecha</th>
+                        <th>Método de Pago</th>
+                        <th>Estado</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-end pe-3">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pedido in Model.HistorialPedidos)
+                    {
+                        <tr>
+                            <td class="ps-3 font-monospace fw-bold" style="color:#6b1a2a;">#@pedido.PedidoId.ToString("D6")</td>
+                            <td style="font-size:0.82rem;">@pedido.FechaPedido.ToString("dd/MM/yyyy")</td>
+                            <td style="font-size:0.82rem;color:#666;">@pedido.MetodoPago?.DescripcionPago</td>
+                            <td>
+                                <span style="background:#6b1a2a12;color:#6b1a2a;border-radius:6px;padding:3px 9px;font-size:0.7rem;font-weight:600;">
+                                    @pedido.Estado?.NombreEstado
+                                </span>
+                            </td>
+                            <td class="text-end fw-bold">S/ @pedido.TotalCompra.ToString("N2")</td>
+                            <td class="text-end pe-3">
+                                <!-- Aquí está el botón que pedías para el Paso 3 -->
+                                <a asp-action="DetallePedido" asp-route-id="@pedido.PedidoId" class="btn-ver-detalle">
+                                    <i class="bi bi-eye me-1"></i>Ver Detalle
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

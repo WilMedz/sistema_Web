@@ -55,5 +55,25 @@ namespace SISTEMA_WEB___TIENDA.Controllers
 
             return View(model);
         }
+        [HttpGet]
+        public async Task<IActionResult> DetallePedido(int id)
+        {
+            int? clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null) return RedirectToAction("Login", "Login");
+
+            // Cargamos el pedido asegurándonos de que pertenezca a este cliente y que traiga toda la info
+            var pedido = await _context.Pedidos
+                .Include(p => p.Estado)
+                .Include(p => p.MetodoPago)
+                .Include(p => p.DireccionEnvio)
+                .Include(p => p.Detalles)
+                    .ThenInclude(d => d.Variante)
+                        .ThenInclude(v => v.Prenda)
+                .FirstOrDefaultAsync(p => p.PedidoId == id && p.ClientesId == clienteId);
+
+            if (pedido == null) return NotFound(); // Si no es su pedido o no existe, error 404
+
+            return View(pedido); // Retorna la vista con el modelo
+        }
     }
 }
