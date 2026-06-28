@@ -23,7 +23,7 @@ namespace SISTEMA_WEB___TIENDA.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString) 
         {
             int? clienteId = HttpContext.Session.GetInt32("ClienteId");
             if (clienteId == null)
@@ -37,14 +37,31 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            var historial = await _context.Pedidos
+            
+            var historialQuery = _context.Pedidos
                 .Where(p => p.ClientesId == clienteId)
+                .Include(p => p.MetodoPago)
+                .Include(p => p.Estado)
                 .Include(p => p.Detalles)
                     .ThenInclude(d => d.Variante)
                         .ThenInclude(v => v.Prenda)
+                .AsQueryable();
+
+            
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                historialQuery = historialQuery.Where(p => p.PedidoId.ToString().Contains(searchString));
+            }
+
+            
+            var historial = await historialQuery
                 .OrderByDescending(p => p.PedidoId)
                 .ToListAsync();
 
+            
+            ViewBag.CurrentFilter = searchString;
+
+            
             var model = new PerfilViewModel
             {
                 NombreUsuario = cliente.Nombres,
@@ -55,13 +72,13 @@ namespace SISTEMA_WEB___TIENDA.Controllers
 
             return View(model);
         }
+
         [HttpGet]
         public async Task<IActionResult> DetallePedido(int id)
         {
             int? clienteId = HttpContext.Session.GetInt32("ClienteId");
             if (clienteId == null) return RedirectToAction("Login", "Login");
 
-            // Cargamos el pedido asegurándonos de que pertenezca a este cliente y que traiga toda la info
             var pedido = await _context.Pedidos
                 .Include(p => p.Estado)
                 .Include(p => p.MetodoPago)
@@ -71,9 +88,9 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                         .ThenInclude(v => v.Prenda)
                 .FirstOrDefaultAsync(p => p.PedidoId == id && p.ClientesId == clienteId);
 
-            if (pedido == null) return NotFound(); // Si no es su pedido o no existe, error 404
+            if (pedido == null) return NotFound();
 
-            return View(pedido); // Retorna la vista con el modelo
+            return View(pedido);
         }
     }
 }

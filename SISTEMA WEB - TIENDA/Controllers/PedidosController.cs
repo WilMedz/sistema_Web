@@ -13,15 +13,29 @@ namespace SISTEMA_WEB___TIENDA.Controllers
         private readonly AppDbContext _context;
         public PedidosController(AppDbContext context) => _context = context;
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString)
         {
-            var pedidos = await _context.Pedidos
+            var pedidos = _context.Pedidos
                 .Include(p => p.Clientes)
                 .Include(p => p.Estado)
                 .Include(p => p.MetodoPago)
+                .AsQueryable(); 
+
+            // 
+            if (!string.IsNullOrEmpty(searchString))
+            {
+               
+                pedidos = pedidos.Where(p => p.PedidoId.ToString().Contains(searchString));
+            }
+
+            var resultado = await pedidos
                 .OrderByDescending(p => p.FechaPedido)
                 .ToListAsync();
-            return View(pedidos);
+
+            
+            ViewBag.CurrentFilter = searchString;
+
+            return View(resultado);
         }
 
         public async Task<IActionResult> Detalle(int id)
