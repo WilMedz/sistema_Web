@@ -37,7 +37,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("CategoriaId");
 
-                    b.ToTable("Categorias");
+                    b.ToTable("Categorias", (string)null);
 
                     b.HasData(
                         new
@@ -82,7 +82,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("CiudadId");
 
-                    b.ToTable("Ciudades");
+                    b.ToTable("Ciudades", (string)null);
 
                     b.HasData(
                         new
@@ -130,7 +130,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasIndex("RolId");
 
-                    b.ToTable("Clientes");
+                    b.ToTable("Clientes", (string)null);
 
                     b.HasData(
                         new
@@ -192,7 +192,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasIndex("VarianteId");
 
-                    b.ToTable("DetallesPedido");
+                    b.ToTable("DetallesPedido", (string)null);
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.DireccionEnvio", b =>
@@ -225,7 +225,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasIndex("ClientesId");
 
-                    b.ToTable("DireccionesEnvio");
+                    b.ToTable("DireccionesEnvio", (string)null);
 
                     b.HasData(
                         new
@@ -253,7 +253,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("EstadoId");
 
-                    b.ToTable("EstadosPedido");
+                    b.ToTable("EstadosPedido", (string)null);
 
                     b.HasData(
                         new
@@ -298,7 +298,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("MarcaId");
 
-                    b.ToTable("Marcas");
+                    b.ToTable("Marcas", (string)null);
 
                     b.HasData(
                         new
@@ -328,7 +328,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("MetodoPagoId");
 
-                    b.ToTable("MetodosPago");
+                    b.ToTable("MetodosPago", (string)null);
 
                     b.HasData(
                         new
@@ -385,7 +385,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasIndex("MetodoPagoId");
 
-                    b.ToTable("Pedidos");
+                    b.ToTable("Pedidos", (string)null);
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Prenda", b =>
@@ -430,7 +430,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasIndex("MarcaId");
 
-                    b.ToTable("Prendas");
+                    b.ToTable("Prendas", (string)null);
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Proveedor", b =>
@@ -476,7 +476,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("ProveedorId");
 
-                    b.ToTable("Proveedores");
+                    b.ToTable("Proveedores", (string)null);
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.RegistroCaja", b =>
@@ -506,7 +506,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasIndex("ClientesId");
 
-                    b.ToTable("RegistrosCaja");
+                    b.ToTable("RegistrosCaja", (string)null);
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Roles", b =>
@@ -524,7 +524,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("RolId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -577,7 +577,7 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasIndex("PrendaId");
 
-                    b.ToTable("VariantesPrenda");
+                    b.ToTable("VariantesPrenda", (string)null);
                 });
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Clientes", b =>

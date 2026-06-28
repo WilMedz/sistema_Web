@@ -1,0 +1,60 @@
+﻿@model SISTEMA_WEB___TIENDA.Models.Pedido
+
+@{
+    ViewData["Title"] = "Comprobante Electrónico";
+}
+
+<div class="container my-5" style="max-width: 750px;">
+    <div class="card shadow border-0" style="background: #faf9f7;">
+        <div class="card-header text-center py-4" style="background-color: #4a1020; color: #c9a84c;">
+            <h1 class="display-6 mb-0" style="font-family: 'Playfair Display', serif; letter-spacing: 2px;">ALEANA STORE</h1>
+            <p class="small mb-0 text-white-50">Comprobante de Compra Electrónico</p>
+        </div>
+        
+        <div class="card-body p-5 bg-white">
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <h5 class="text-muted small text-uppercase font-weight-bold">Datos del Establecimiento</h5>
+                    <p class="mb-1"><strong>ALEANA STORE S.A.C.</strong></p>
+                    <p class="text-muted small mb-0">Cajamarca, Perú</p>
+                </div>
+                <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                    <h5 class="text-muted small text-uppercase font-weight-bold">Número de Pedido</h5>
+                    <h3 style="color: #6b1a2a; font-family: monospace;">#@Model.PedidoId.ToString().PadLeft(6, '0')</h3>
+                    <p class="text-muted small mb-0">Fecha: @Model.FechaPedido.ToString("dd/MM/yyyy hh:mm tt")</p>
+                </div>
+            </div>
+
+            <hr style="border-top: 1px solid #ede8e0;" />
+
+            <div class="row my-4">
+                <div class="col-sm-6">
+                    <h6 class="text-uppercase text-muted small">Cliente:</h6>
+                    <p class="mb-1"><strong>@Model.Clientes?.Nombres</strong></p>
+                    <p class="text-muted small mb-0">@Model.Clientes?.CorreoElectronico</p>
+                </div>
+                <div class="col-sm-6 mt-3 mt-sm-0">
+                    <h6 class="text-uppercase text-muted small">Detalles de Entrega:</h6>
+                    <p class="mb-1">Dirección: @Model.DireccionEnvio?.CalleAvenida</p>
+                    <p class="text-muted small mb-0">Método de Pago: @Model.MetodoPago?.DescripcionPago</p>
+                </div>
+            </div>
+
+            <div class="alert text-center my-4" style="background-color: rgba(107,26,42,0.06); color: #6b1a2a;">
+                <i class="bi bi-info-circle-fill me-2"></i> Estado de Transacción: <strong>@Model.Estado?.NombreEstado</strong>
+            </div>
+
+            <div class="border p-3 rounded text-end mb-4 bg-light">
+                <span class="text-muted me-3">TOTAL PAGADO:</span>
+                <span class="h4 font-weight-bold" style="color: #6b1a2a;">S/ @Model.TotalCompra.ToString("F2")</span>
+            </div>
+
+            <div class="text-center mt-5">
+                <a asp-action="Index" class="btn btn-outline-secondary px-4 me-2">Volver al Catálogo</a>
+                <button onclick="window.print();" class="btn text-white px-4" style="background-color: #6b1a2a;">
+                    <i class="bi bi-printer me-2"></i>Imprimir Comprobante
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

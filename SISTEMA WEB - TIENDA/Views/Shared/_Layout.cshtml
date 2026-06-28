@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http
 @using SISTEMA_WEB___TIENDA.Extensions
 @inject IHttpContextAccessor HttpContextAccessor
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -190,9 +189,15 @@
                     }
                     else
                     {
+                        <!-- Enlaces del cliente / por defecto -->
                         <a asp-controller="Home" asp-action="Index" class="nav-link-item">
                             <i class="bi bi-grid"></i>
                             <span class="d-none d-md-inline ms-1">Catálogo</span>
+                        </a>
+                        
+                        <a asp-controller="Home" asp-action="MisPedidos" class="nav-link-item">
+                            <i class="bi bi-truck"></i>
+                            <span class="d-none d-md-inline ms-1">Rastrear Pedido</span>
                         </a>
                     }
 
@@ -209,7 +214,7 @@
                         </button>
                     </form>
 
-                    @* Bolsa solo para clientes *@
+                    @* Bolsa apuntando a su controlador y vista originales *@
                     @if (rol == "Cliente" || rol == "")
                     {
                         <a asp-controller="Carrito" asp-action="Index" class="btn-bolsa position-relative ms-2">

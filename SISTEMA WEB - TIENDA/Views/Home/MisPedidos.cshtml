@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Rastreo de Pedidos";
+}
+
+<div class="container my-5" style="max-width: 600px;">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <div class="p-3 d-inline-block rounded-circle mb-3" style="background-color: rgba(107,26,42,0.06); color: #6b1a2a;">
+                    <i class="bi bi-truck display-5"></i>
+                </div>
+                <h2 class="h3 font-weight-bold" style="color: #6b1a2a;">Rastrea tu Pedido</h2>
+                <p class="text-muted small">Ingresa el número de tu orden impreso en tu comprobante electrónico</p>
+            </div>
+
+            @if (TempData["ErrorRastreo"] != null)
+            {
+                <div class="alert alert-danger text-center small mb-4">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorRastreo"]
+                </div>
+            }
+
+            <form asp-action="BuscarEstado" method="post">
+                @Html.AntiForgeryToken()
+                <div class="mb-4">
+                    <label class="form-label text-muted small text-uppercase">Código de Pedido</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted">#</span>
+                        <input type="number" name="pedidoId" class="form-control border-start-0 ps-1" placeholder="Ej. 1" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn text-white w-100 py-2 font-weight-bold" style="background-color: #6b1a2a;">
+                    Buscar Estado de Entrega
+                </button>
+            </form>
+
+            @if (ViewBag.IdBuscado != null)
+            {
+                <div class="mt-5 p-4 rounded border" style="background-color: #faf9f7;">
+                    <h5 class="h6 text-uppercase text-muted mb-3 small">Resultado de Búsqueda:</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Orden:</span>
+                        <strong class="font-family-monospace">#@ViewBag.IdBuscado.ToString().PadLeft(6, '0')</strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Fecha Compra:</span>
+                        <span>@ViewBag.Fecha</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Monto Total:</span>
+                        <strong>S/ @ViewBag.Total</strong>
+                    </div>
+                    <hr class="my-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Estado Actual:</span>
+                        <span class="badge px-3 py-2 rounded-pill bg-success text-white text-uppercase" style="font-size: 0.75rem;">
+                            <i class="bi bi-check-circle-fill me-1"></i> @ViewBag.Estado
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
