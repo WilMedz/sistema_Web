@@ -1,0 +1,284 @@
+﻿@using SISTEMA_WEB___TIENDA.ViewModels
+@model IEnumerable<SISTEMA_WEB___TIENDA.Models.VariantePrenda>
+@{
+    ViewData["Title"] = "Nueva Venta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var carrito = ViewBag.Carrito as List<CarritoItem> ?? new List<CarritoItem>();
+    decimal granTotal = ViewBag.GranTotal ?? 0m;
+}
+
+<style>
+    .venta-header {
+        background: linear-gradient(135deg, #198754, #146c43);
+        border-radius: 14px;
+        padding: 24px 28px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .venta-header::after {
+            content: '';
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            top: -40px;
+            right: -20px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .venta-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .section-lbl {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+        margin: 20px 0 10px;
+    }
+
+    .prod-card {
+        background: white;
+        border-radius: 10px;
+        padding: 14px 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .prod-nombre {
+        font-weight: 600;
+        color: #1c1c1c;
+        font-size: 0.88rem;
+    }
+
+    .prod-info {
+        font-size: 0.75rem;
+        color: #888;
+    }
+
+    .prod-precio {
+        font-weight: 700;
+        color: #198754;
+        white-space: nowrap;
+    }
+
+    .field-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .carrito-row {
+        border-bottom: 1px solid #f0f0f0;
+        padding: 10px 0;
+        font-size: 0.85rem;
+    }
+
+        .carrito-row:last-child {
+            border-bottom: none;
+        }
+
+    .total-row {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #198754;
+        padding-top: 10px;
+    }
+
+    .btn-confirmar {
+        background: #198754;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 28px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s;
+        width: 100%;
+    }
+
+        .btn-confirmar:hover {
+            background: #146c43;
+        }
+
+    .btn-quitar {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 0.8rem;
+        cursor: pointer;
+        padding: 0 4px;
+    }
+
+    select.form-select-sm, input.form-control-sm {
+        font-size: 0.82rem;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="venta-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1 small" style="color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:1px;">
+            <i class="bi bi-cart-plus me-1"></i>Módulo de Caja
+        </p>
+        <h4>Nueva Venta</h4>
+        <small style="color:rgba(255,255,255,0.6);">Selecciona productos y completa los datos de entrega</small>
+    </div>
+    <a asp-action="Index" asp-controller="Caja"
+       class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;position:relative;z-index:1;">
+        <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+</div>
+
+@if (TempData["ErrorStock"] != null)
+{
+    <div class="alert alert-warning small py-2 mb-3">
+        <i class="bi bi-exclamation-triangle me-1"></i>@TempData["ErrorStock"]
+    </div>
+}
+
+<div class="row g-4">
+
+    <!-- COLUMNA IZQUIERDA: Productos -->
+    <div class="col-lg-7">
+        <div class="section-lbl mt-0">Productos disponibles</div>
+
+        @if (!Model.Any())
+        {
+            <p class="text-muted small">No hay productos con stock disponible.</p>
+        }
+        else
+        {
+            <div class="d-flex flex-column gap-2">
+                @foreach (var v in Model)
+                {
+                    decimal precio = (v.Prenda.PrecioOferta.HasValue && v.Prenda.PrecioOferta > 0)
+                        ? v.Prenda.PrecioOferta.Value : v.Prenda.PrecioLista;
+                    <div class="prod-card">
+                        <div style="flex:1;">
+                            <div class="prod-nombre">@v.Prenda.NombrePrenda</div>
+                            <div class="prod-info">Talla: @v.Talla | Color: @v.Color | Stock: @v.Stock</div>
+                        </div>
+                        <div class="prod-precio">S/ @precio.ToString("F2")</div>
+                        <form asp-action="AgregarProducto" asp-controller="Caja" method="post" class="d-flex gap-1 align-items-center">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="varianteId" value="@v.VarianteId" />
+                            <input type="number" name="cantidad" value="1" min="1" max="@v.Stock"
+                                   class="form-control form-control-sm" style="width:60px;text-align:center;" />
+                            <button type="submit" class="btn btn-sm text-white fw-bold"
+                                    style="background:#198754;border-radius:6px;white-space:nowrap;">
+                                <i class="bi bi-plus-circle"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- COLUMNA DERECHA: Carrito + Formulario -->
+    <div class="col-lg-5">
+        <div class="section-lbl mt-0">Resumen de venta</div>
+        <div class="bg-white rounded-3 shadow-sm p-3 mb-3">
+            @if (!carrito.Any())
+            {
+                <p class="text-muted small text-center py-3 mb-0">
+                    <i class="bi bi-cart-x d-block mb-1" style="font-size:1.5rem;color:#ddd;"></i>
+                    Agrega productos para continuar
+                </p>
+            }
+            else
+            {
+                @foreach (var item in carrito)
+                {
+                    <div class="carrito-row d-flex align-items-center gap-2">
+                        <div style="flex:1;">
+                            <div class="fw-semibold" style="font-size:0.85rem;">@item.NombrePrenda</div>
+                            <div class="text-muted" style="font-size:0.75rem;">
+                                @item.Talla / @item.Color × @item.Cantidad
+                            </div>
+                        </div>
+                        <div class="fw-bold" style="color:#198754;font-size:0.85rem;">S/ @item.Total.ToString("F2")</div>
+                        <form asp-action="QuitarProducto" asp-controller="Caja" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="varianteId" value="@item.VarianteId" />
+                            <button type="submit" class="btn-quitar" title="Quitar">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
+                <div class="total-row d-flex justify-content-between">
+                    <span>TOTAL</span>
+                    <span>S/ @granTotal.ToString("F2")</span>
+                </div>
+            }
+        </div>
+
+        @if (carrito.Any())
+        {
+            <div class="section-lbl">Datos de entrega y pago</div>
+            <div class="bg-white rounded-3 shadow-sm p-3">
+                <form asp-action="GenerarPedidoDirecto" asp-controller="Caja" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="field-label">Nombre del cliente</label>
+                        <input type="text" name="NombreCliente" class="form-control form-control-sm"
+                               placeholder="Ej. Juan Pérez" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="field-label">Calle / Avenida</label>
+                        <input type="text" name="CalleAvenida" class="form-control form-control-sm"
+                               placeholder="Ej. Av. Los Héroes 123" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="field-label">Distrito</label>
+                        <input type="text" name="Distrito" class="form-control form-control-sm"
+                               placeholder="Ej. Cajamarca" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="field-label">Referencia</label>
+                        <input type="text" name="Referencia" class="form-control form-control-sm"
+                               placeholder="Ej. Frente al parque" required />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="field-label">Método de pago</label>
+                        <select name="MetodoPagoId" class="form-select form-select-sm" required>
+                            <option value="">-- Selecciona --</option>
+                            @foreach (var mp in ViewBag.MetodosPago as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>())
+                            {
+                                <option value="@mp.Value">@mp.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-confirmar">
+                        <i class="bi bi-check-circle me-2"></i>CONFIRMAR VENTA — S/ @granTotal.ToString("F2")
+                    </button>
+                </form>
+            </div>
+        }
+    </div>
+</div>

@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-
 namespace SISTEMA_WEB___TIENDA.Controllers
 {
     public class LoginController : Controller
@@ -26,15 +25,16 @@ namespace SISTEMA_WEB___TIENDA.Controllers
         }
 
         [HttpGet]
-
         public IActionResult Login()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 if (User.IsInRole("Administrador"))
-                {
                     return RedirectToAction("Admin", "Login");
-                }
+
+                if (User.IsInRole("Cajero"))
+                    return RedirectToAction("Index", "Caja");
+
                 return RedirectToAction("Index", "Home");
             }
             return View();
@@ -45,9 +45,7 @@ namespace SISTEMA_WEB___TIENDA.Controllers
         public async Task<IActionResult> Login(LoginVM modelo)
         {
             if (!ModelState.IsValid)
-            {
                 return View(modelo);
-            }
 
             try
             {
@@ -60,7 +58,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                     ModelState.AddModelError(string.Empty, "El correo o la contraseña son incorrectos.");
                     return View(modelo);
                 }
-
 
                 if (!BCrypt.Net.BCrypt.Verify(modelo.Password, usuario.Contrasena))
                 {
@@ -76,34 +73,37 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                     new Claim("UsuarioId", usuario.ClienteId.ToString())
                 };
 
-              
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
 
                 HttpContext.Session.SetInt32("ClienteId", usuario.ClienteId);
                 HttpContext.Session.SetString("UsuarioNombre", usuario.Nombres);
                 HttpContext.Session.SetString("UsuarioRol", usuario.Rol.NombreRol);
 
+                // ── Redirección por rol ──────────────────────────
                 if (usuario.Rol.NombreRol == "Administrador")
-                {
                     return RedirectToAction("Admin", "Login");
-                }
+
+                if (usuario.Rol.NombreRol == "Cajero")
+                    return RedirectToAction("Index", "Caja");
 
                 return RedirectToAction("Index", "Home");
             }
             catch (Microsoft.Data.SqlClient.SqlException)
             {
-                ModelState.AddModelError(string.Empty, " El esquema de la base de datos no coincide. ");
+                ModelState.AddModelError(string.Empty, "El esquema de la base de datos no coincide.");
                 return View(modelo);
             }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Error al procesar su solicitud. ");
+                ModelState.AddModelError(string.Empty, "Error al procesar su solicitud.");
                 return View(modelo);
             }
         }
-
 
         [HttpGet]
         public async Task<IActionResult> Registro()
@@ -124,7 +124,9 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 return View(modelo);
             }
 
-            var existeCorreo = await _context.Clientes.AnyAsync(c => c.CorreoElectronico == modelo.CorreoElectronico);
+            var existeCorreo = await _context.Clientes
+                .AnyAsync(c => c.CorreoElectronico == modelo.CorreoElectronico);
+
             if (existeCorreo)
             {
                 ModelState.AddModelError("CorreoElectronico", "Este correo electrónico ya está registrado.");
@@ -133,7 +135,8 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 return View(modelo);
             }
 
-            var rolCliente = await _context.Roles.FirstOrDefaultAsync(r => r.NombreRol == "Cliente");
+            var rolCliente = await _context.Roles
+                .FirstOrDefaultAsync(r => r.NombreRol == "Cliente");
             int idRolDefault = rolCliente != null ? rolCliente.RolId : 2;
 
             var nuevoCliente = new Clientes
@@ -142,11 +145,9 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 CorreoElectronico = modelo.CorreoElectronico,
                 CiudadId = modelo.CiudadId,
                 RolId = idRolDefault,
-                FechaNacimiento = modelo.FechaNacimiento
+                FechaNacimiento = modelo.FechaNacimiento,
+                Contrasena = BCrypt.Net.BCrypt.HashPassword(modelo.Contrasena)
             };
-
-
-            nuevoCliente.Contrasena = BCrypt.Net.BCrypt.HashPassword(modelo.Contrasena);
 
             _context.Clientes.Add(nuevoCliente);
             await _context.SaveChangesAsync();
@@ -174,22 +175,19 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             ViewBag.TotalPrendas = await _context.Prendas.CountAsync();
             ViewBag.TotalClientes = await _context.Clientes.CountAsync(c => c.RolId == 2);
             ViewBag.PedidosHoy = await _context.Pedidos
-                                        .CountAsync(p => p.FechaPedido.Date == hoy.Date);
+                .CountAsync(p => p.FechaPedido.Date == hoy.Date);
             ViewBag.VentasMes = await _context.Pedidos
-                                        .Where(p => p.FechaPedido.Year == hoy.Year && p.FechaPedido.Month == hoy.Month)
-                                        .SumAsync(p => (decimal?)p.TotalCompra) ?? 0;
+                .Where(p => p.FechaPedido.Year == hoy.Year && p.FechaPedido.Month == hoy.Month)
+                .SumAsync(p => (decimal?)p.TotalCompra) ?? 0;
             ViewBag.StockCritico = await _context.VariantesPrenda
-                                        .Include(v => v.Prenda)
-                                        .Where(v => v.Stock <= 3)
-                                        .ToListAsync();
+                .Include(v => v.Prenda)
+                .Where(v => v.Stock <= 3)
+                .ToListAsync();
 
             return View();
         }
 
         [HttpGet]
-        public IActionResult AccesoDenegado()
-        {
-            return View();
-        }
+        public IActionResult AccesoDenegado() => View();
     }
 }

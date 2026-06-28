@@ -19,23 +19,13 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 .Include(p => p.Clientes)
                 .Include(p => p.Estado)
                 .Include(p => p.MetodoPago)
-                .AsQueryable(); 
+                .AsQueryable();
 
-            // 
             if (!string.IsNullOrEmpty(searchString))
-            {
-               
                 pedidos = pedidos.Where(p => p.PedidoId.ToString().Contains(searchString));
-            }
 
-            var resultado = await pedidos
-                .OrderByDescending(p => p.FechaPedido)
-                .ToListAsync();
-
-            
             ViewBag.CurrentFilter = searchString;
-
-            return View(resultado);
+            return View(await pedidos.OrderByDescending(p => p.FechaPedido).ToListAsync());
         }
 
         public async Task<IActionResult> Detalle(int id)
@@ -54,13 +44,16 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return View(pedido);
         }
 
-        [Authorize(Roles = "Administrador")]
+        // Ahora accesible para Cajero también
+        [HttpGet]
         public async Task<IActionResult> CambiarEstado(int id)
         {
-            var pedido = await _context.Pedidos.FindAsync(id);
+            var pedido = await _context.Pedidos
+                .Include(p => p.Clientes)
+                .Include(p => p.Estado)
+                .FirstOrDefaultAsync(p => p.PedidoId == id);
             if (pedido == null) return NotFound();
 
-            // CORRECCIÓN: Se cambió "DescripcionEstado" por "NombreEstado" según la instrucción de tu vista
             ViewBag.Estados = new SelectList(
                 await _context.EstadosPedido.ToListAsync(),
                 "EstadoId", "NombreEstado", pedido.EstadoId);
@@ -69,14 +62,37 @@ namespace SISTEMA_WEB___TIENDA.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> CambiarEstado(int id, int EstadoId)
         {
             var pedido = await _context.Pedidos.FindAsync(id);
             if (pedido == null) return NotFound();
             pedido.EstadoId = EstadoId;
             await _context.SaveChangesAsync();
-            TempData["OK"] = "Estado del pedido actualizado.";
+            TempData["OK"] = "Estado del pedido actualizado correctamente.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Solo Administrador puede eliminar
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            var pedido = await _context.Pedidos
+                .Include(p => p.Detalles)
+                .FirstOrDefaultAsync(p => p.PedidoId == id);
+
+            if (pedido == null) return NotFound();
+
+            // Restaurar stock antes de eliminar
+            foreach (var detalle in pedido.Detalles)
+            {
+                var variante = await _context.VariantesPrenda.FindAsync(detalle.VarianteId);
+                if (variante != null) variante.Stock += detalle.Cantidad;
+            }
+
+            _context.Pedidos.Remove(pedido);
+            await _context.SaveChangesAsync();
+            TempData["OK"] = $"Pedido #{id:D6} eliminado y stock restaurado.";
             return RedirectToAction(nameof(Index));
         }
     }

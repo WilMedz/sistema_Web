@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SISTEMA_WEB___TIENDA.Data;
 using SISTEMA_WEB___TIENDA.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using SISTEMA_WEB___TIENDA.Models;
 using SISTEMA_WEB___TIENDA.ViewModels;
 
@@ -93,6 +94,7 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Cliente")]
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
@@ -112,8 +114,10 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return View(new CheckoutVM());
         }
 
+        [Authorize(Roles = "Cliente")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Checkout(CheckoutVM modelo)
         {
             var usuarioId = HttpContext.Session.GetInt32("ClienteId");

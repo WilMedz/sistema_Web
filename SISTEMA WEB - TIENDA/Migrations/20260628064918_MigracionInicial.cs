@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SISTEMA_WEB___TIENDA.Migrations
 {
     /// <inheritdoc />
-    public partial class MIg27 : Migration
+    public partial class MigracionInicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

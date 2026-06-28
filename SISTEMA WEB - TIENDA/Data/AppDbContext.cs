@@ -22,6 +22,7 @@ namespace SISTEMA_WEB___TIENDA.Data
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<DetallePedido> DetallesPedido { get; set; }
         public DbSet<Proveedor> Proveedores { get; set; }
+        public DbSet<RegistroCaja> RegistrosCaja { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

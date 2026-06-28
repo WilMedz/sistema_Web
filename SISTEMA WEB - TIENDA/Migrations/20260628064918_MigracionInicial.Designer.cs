@@ -12,8 +12,8 @@ using SISTEMA_WEB___TIENDA.Data;
 namespace SISTEMA_WEB___TIENDA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260627201335_MIg 27")]
-    partial class MIg27
+    [Migration("20260628064918_MigracionInicial")]
+    partial class MigracionInicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

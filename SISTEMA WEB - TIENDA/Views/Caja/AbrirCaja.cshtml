@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "Abrir Caja";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .caja-header {
+        background: linear-gradient(135deg, #198754, #146c43);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+    }
+
+        .caja-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        padding: 28px;
+        max-width: 480px;
+    }
+
+    .field-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .field-input {
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid #ddd;
+        padding: 9px 0;
+        font-size: 0.9rem;
+        background: transparent;
+        outline: none;
+        transition: border-color 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+
+        .field-input:focus {
+            border-bottom-color: #198754;
+        }
+
+    .btn-guardar {
+        background: #198754;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 28px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+        .btn-guardar:hover {
+            background: #146c43;
+        }
+
+    .btn-cancelar {
+        background: transparent;
+        color: #888;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 11px 20px;
+        font-size: 0.82rem;
+        text-decoration: none;
+    }
+</style>
+
+<div class="caja-header">
+    <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.6);text-transform:uppercase;">
+        <i class="bi bi-box-arrow-in-right me-1"></i>Caja
+    </p>
+    <h4>Abrir Caja</h4>
+</div>
+
+<div class="form-card">
+    <form asp-action="AbrirCaja" asp-controller="Caja" method="post">
+        @Html.AntiForgeryToken()
+        <div class="mb-4">
+            <label class="field-label">Monto Inicial (S/)</label>
+            <input type="number"
+                   name="montoInicial"
+                   class="field-input"
+                   placeholder="0.00"
+                   step="0.01"
+                   min="0"
+                   required />
+        </div>
+        <div class="d-flex gap-3 mt-2">
+            <button type="submit" class="btn-guardar">
+                <i class="bi bi-check-lg me-2"></i>ABRIR CAJA
+            </button>
+            <a asp-action="Index" asp-controller="Caja" class="btn-cancelar">Cancelar</a>
+        </div>
+    </form>
+</div>

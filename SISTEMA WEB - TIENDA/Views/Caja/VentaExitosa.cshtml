@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Venta Exitosa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-center py-5">
+    <div style="width:80px;height:80px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <i class="bi bi-check-lg" style="font-size:2.5rem;color:#198754;"></i>
+    </div>
+    <h3 style="font-family:'Playfair Display',serif;font-weight:700;">¡Venta generada!</h3>
+    <p style="color:#666;font-size:0.9rem;margin-top:8px;">
+        Pedido <strong style="color:#198754;">#@TempData["PedidoGenerado"]</strong> registrado correctamente.
+    </p>
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <a asp-action="NuevaVenta" class="btn fw-bold text-white px-4"
+           style="background:#198754;border-radius:8px;">
+            <i class="bi bi-plus-circle me-1"></i>Nueva Venta
+        </a>
+        <a asp-controller="Pedidos" asp-action="Index" class="btn fw-bold px-4"
+           style="background:#f0f0f0;color:#333;border-radius:8px;">
+            <i class="bi bi-list-ul me-1"></i>Ver Pedidos
+        </a>
+    </div>
+</div>

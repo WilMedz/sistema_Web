@@ -19,13 +19,13 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // verificacion de que el usuario tiene la Cookie de autenticación activa
         if (User.Identity == null || !User.Identity.IsAuthenticated)
-        {
             return RedirectToAction("Login", "Login");
-        }
 
-        // usuario está logueado, carga catalogo
+        // Si es cajero, redirige al módulo de caja
+        if (User.IsInRole("Cajero"))
+            return RedirectToAction("Index", "Caja");
+
         var catalogoPrendas = await _context.Prendas
             .Include(p => p.Marca)
             .Include(p => p.Categoria)

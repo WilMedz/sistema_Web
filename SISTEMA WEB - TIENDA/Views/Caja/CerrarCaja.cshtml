@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "Cerrar Caja";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var caja = ViewBag.Caja as SISTEMA_WEB___TIENDA.Models.RegistroCaja;
+    decimal totalVentas = ViewBag.TotalVentas ?? 0m;
+}
+<style>
+    .caja-header {
+        background: linear-gradient(135deg,#dc3545,#b02a37);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+    }
+
+        .caja-header h4 {
+            font-family: 'Playfair Display',serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        padding: 28px;
+        max-width: 480px;
+    }
+
+    .field-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .field-input {
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid #ddd;
+        padding: 9px 0;
+        font-size: 0.9rem;
+        background: transparent;
+        outline: none;
+        transition: border-color 0.2s;
+        font-family: 'Inter',sans-serif;
+    }
+
+        .field-input:focus {
+            border-bottom-color: #dc3545;
+        }
+
+    .resumen {
+        background: #fff5f5;
+        border-left: 4px solid #dc3545;
+        border-radius: 0 8px 8px 0;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        font-size: 0.85rem;
+    }
+
+    .btn-cerrar {
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 28px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .btn-cancelar {
+        background: transparent;
+        color: #888;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 11px 20px;
+        font-size: 0.82rem;
+        text-decoration: none;
+    }
+</style>
+
+<div class="caja-header">
+    <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.6);text-transform:uppercase;">
+        <i class="bi bi-box-arrow-right me-1"></i>Caja
+    </p>
+    <h4>Cerrar Caja</h4>
+</div>
+
+<div class="form-card">
+    <div class="resumen">
+        <div><strong>Apertura:</strong> @caja?.FechaApertura.ToString("dd/MM/yyyy HH:mm")</div>
+        <div class="mt-1"><strong>Monto inicial:</strong> S/ @caja?.MontoInicial.ToString("N2")</div>
+        <div class="mt-1"><strong>Total vendido:</strong> S/ @totalVentas.ToString("N2")</div>
+    </div>
+    <form asp-action="CerrarCaja" method="post">
+        @Html.AntiForgeryToken()
+        <label class="field-label">Monto Final en Caja (S/)</label>
+        <input type="number" name="montoFinal" class="field-input" placeholder="0.00"
+               step="0.01" min="0" required />
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn-cerrar"
+                    onclick="return confirm('¿Confirmas el cierre de caja?')">
+                <i class="bi bi-check-lg me-2"></i>CERRAR CAJA
+            </button>
+            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
+        </div>
+    </form>
+</div>

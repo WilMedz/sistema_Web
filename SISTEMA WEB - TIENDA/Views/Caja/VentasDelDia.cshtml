@@ -1,0 +1,147 @@
+﻿@model IEnumerable<SISTEMA_WEB___TIENDA.Models.Pedido>
+@{
+    ViewData["Title"] = "Ventas del Día";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .caja-header {
+        background: linear-gradient(135deg, #198754, #146c43);
+        color: white;
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 24px;
+    }
+
+    .tabla-admin th {
+        background: #146c43;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    .tabla-admin td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    .tabla-admin tbody tr:hover {
+        background: #f0faf4;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        padding: 18px 22px;
+        border-left: 4px solid #198754;
+    }
+
+    .stat-label {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aaa;
+    }
+
+    .stat-valor {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #198754;
+    }
+
+    .badge-estado {
+        border-radius: 6px;
+        padding: 3px 9px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+</style>
+
+<div class="caja-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+        <p class="mb-1 small" style="color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:1px;">
+            <i class="bi bi-calendar-day me-1"></i>Módulo de Caja
+        </p>
+        <h4 class="fw-bold mb-0">Ventas del Día</h4>
+        <small style="color:rgba(255,255,255,0.6);">@DateTime.Today.ToString("dddd dd 'de' MMMM", new System.Globalization.CultureInfo("es-PE"))</small>
+    </div>
+    <a asp-action="Index" class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;">
+        <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+        <div class="stat-card">
+            <div class="stat-label">Total Recaudado Hoy</div>
+            <div class="stat-valor">S/ @((ViewBag.TotalDia as decimal? ?? 0).ToString("N2"))</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="stat-card" style="border-left-color:#c9a84c;">
+            <div class="stat-label">Pedidos Generados</div>
+            <div class="stat-valor" style="color:#c9a84c;">@ViewBag.TotalPedidos</div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-calendar-x" style="font-size:2.5rem;color:#ddd;"></i>
+        <p class="mt-2">No hay ventas registradas hoy.</p>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table tabla-admin align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3"># Pedido</th>
+                        <th>Cliente</th>
+                        <th>Hora</th>
+                        <th>Método Pago</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-3">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        var (bg, color) = p.Estado?.NombreEstado switch
+                        {
+                            "Pendiente" => ("#fef9c3", "#854d0e"),
+                            "Procesando" => ("#dbeafe", "#1e40af"),
+                            "Enviado" => ("#e0e7ff", "#3730a3"),
+                            "Entregado" => ("#d1fae5", "#065f46"),
+                            "Cancelado" => ("#fee2e2", "#991b1b"),
+                            _ => ("#f3f4f6", "#374151")
+                        };
+                        <tr>
+                            <td class="ps-3 fw-bold font-monospace" style="color:#198754;">
+                                #@p.PedidoId.ToString("D6")
+                            </td>
+                            <td>@p.Clientes?.Nombres</td>
+                            <td style="color:#666;font-size:0.82rem;">@p.FechaPedido.ToString("HH:mm")</td>
+                            <td style="color:#666;font-size:0.82rem;">@p.MetodoPago?.DescripcionPago</td>
+                            <td>
+                                <span class="badge-estado" style="background:@bg;color:@color;">
+                                    @p.Estado?.NombreEstado
+                                </span>
+                            </td>
+                            <td class="text-end pe-3 fw-bold" style="color:#198754;">
+                                S/ @p.TotalCompra.ToString("N2")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

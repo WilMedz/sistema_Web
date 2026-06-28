@@ -13,136 +13,156 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <style>
-        :root {
-            --granate:      #6b1a2a;
-            --granate-dark: #4a1020;
-            --granate-soft: #8c2438;
-            --gold:         #c9a84c;
-            --light:        #faf9f7;
-            --text:         #1c1c1c;
-        }
+            :root {
+                --granate: #6b1a2a;
+                --granate-dark: #4a1020;
+                --granate-soft: #8c2438;
+                --gold: #c9a84c;
+                --light: #faf9f7;
+                --text: #1c1c1c;
+            }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--light);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+            body {
+                font-family: 'Inter', sans-serif;
+                background: var(--light);
+                color: var(--text);
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
 
-        h1, h2, h3, h4, h5 {
-            font-family: 'Playfair Display', serif;
-        }
+            h1, h2, h3, h4, h5 {
+                font-family: 'Playfair Display', serif;
+            }
 
-        .topbar {
-            background: var(--granate-dark);
-            color: rgba(255,255,255,0.75);
-            font-size: 0.72rem;
-            text-align: center;
-            padding: 6px 0;
-            letter-spacing: 0.5px;
-        }
+            .topbar {
+                background: var(--granate-dark);
+                color: rgba(255,255,255,0.75);
+                font-size: 0.72rem;
+                text-align: center;
+                padding: 6px 0;
+                letter-spacing: 0.5px;
+            }
 
-        .navbar-aleana {
-            background: white;
-            border-bottom: 2px solid var(--granate);
-            padding: 14px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 12px rgba(107,26,42,0.08);
-        }
+            .navbar-aleana {
+                background: white;
+                border-bottom: 2px solid var(--granate);
+                padding: 14px 0;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                box-shadow: 0 2px 12px rgba(107,26,42,0.08);
+            }
 
-        .navbar-aleana .brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--granate);
-            text-decoration: none;
-            letter-spacing: 3px;
-        }
+                .navbar-aleana .brand {
+                    font-family: 'Playfair Display', serif;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    color: var(--granate);
+                    text-decoration: none;
+                    letter-spacing: 3px;
+                }
 
-        .navbar-aleana .nav-link-item {
-            color: #555;
-            text-decoration: none;
-            font-size: 0.82rem;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
-            letter-spacing: 0.3px;
-        }
-        .navbar-aleana .nav-link-item:hover {
-            color: var(--granate);
-            background: rgba(107,26,42,0.06);
-        }
+                .navbar-aleana .nav-link-item {
+                    color: #555;
+                    text-decoration: none;
+                    font-size: 0.82rem;
+                    font-weight: 500;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    transition: all 0.2s;
+                    letter-spacing: 0.3px;
+                }
 
-        .navbar-aleana .search-box {
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            padding: 7px 16px;
-            font-size: 0.82rem;
-            width: 220px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-            background: #faf9f7;
-        }
-        .navbar-aleana .search-box:focus {
-            outline: none;
-            border-color: var(--granate);
-            box-shadow: 0 0 0 3px rgba(107,26,42,0.08);
-        }
+                    .navbar-aleana .nav-link-item:hover {
+                        color: var(--granate);
+                        background: rgba(107,26,42,0.06);
+                    }
 
-        .btn-bolsa {
-            background: var(--granate);
-            color: white;
-            font-weight: 600;
-            font-size: 0.82rem;
-            padding: 8px 18px;
-            border-radius: 20px;
-            text-decoration: none;
-            transition: background 0.2s;
-            white-space: nowrap;
-        }
-        .btn-bolsa:hover { background: var(--granate-dark); color: white; }
+                .navbar-aleana .search-box {
+                    border: 1px solid #ddd;
+                    border-radius: 20px;
+                    padding: 7px 16px;
+                    font-size: 0.82rem;
+                    width: 220px;
+                    font-family: 'Inter', sans-serif;
+                    transition: all 0.2s;
+                    background: #faf9f7;
+                }
 
-        .page-content {
-            flex: 1;
-            padding: 36px 0 56px;
-        }
+                    .navbar-aleana .search-box:focus {
+                        outline: none;
+                        border-color: var(--granate);
+                        box-shadow: 0 0 0 3px rgba(107,26,42,0.08);
+                    }
 
-        footer {
-            background: var(--granate-dark);
-            color: rgba(255,255,255,0.55);
-            font-size: 0.78rem;
-            padding: 18px 0;
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-        }
-        footer strong { color: var(--gold); }
-        footer a { color: var(--gold); text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
+            .btn-bolsa {
+                background: var(--granate);
+                color: white;
+                font-weight: 600;
+                font-size: 0.82rem;
+                padding: 8px 18px;
+                border-radius: 20px;
+                text-decoration: none;
+                transition: background 0.2s;
+                white-space: nowrap;
+            }
+
+                .btn-bolsa:hover {
+                    background: var(--granate-dark);
+                    color: white;
+                }
+
+            .page-content {
+                flex: 1;
+                padding: 36px 0 56px;
+            }
+
+            footer {
+                background: var(--granate-dark);
+                color: rgba(255,255,255,0.55);
+                font-size: 0.78rem;
+                padding: 18px 0;
+                text-align: center;
+                font-family: 'Inter', sans-serif;
+            }
+
+                footer strong {
+                    color: var(--gold);
+                }
+
+                footer a {
+                    color: var(--gold);
+                    text-decoration: none;
+                }
+
+                    footer a:hover {
+                        text-decoration: underline;
+                    }
     </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-    Envíos a Cajamarca y toda la región &nbsp;·&nbsp; Lunes a Sábado 9am – 7pm
-</div>
+    <!-- TOP BAR -->
+    <div class="topbar">
+        Envíos a Cajamarca y toda la región &nbsp;·&nbsp; Lunes a Sábado 9am – 7pm
+    </div>
 
-<!-- NAVBAR -->
-<nav class="navbar-aleana">
-    <div class="container d-flex align-items-center gap-3">
+    <!-- NAVBAR -->
+    <nav class="navbar-aleana">
+        <div class="container d-flex align-items-center gap-3">
 
-        <a href="/" class="brand">ALEANA</a>
+            <a href="/" class="brand">ALEANA</a>
 
-        <div class="flex-grow-1 d-none d-lg-flex justify-content-center">
-            <input type="text" class="search-box" placeholder="🔍  Buscar prendas...">
-        </div>
+            <div class="flex-grow-1 d-none d-lg-flex justify-content-center">
+                <input type="text" class="search-box" placeholder="🔍  Buscar prendas...">
+            </div>
 
             <div class="d-flex align-items-center gap-1 ms-auto">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -189,8 +209,8 @@
                         </button>
                     </form>
 
-                    @* Se agregó la condición para ocultar la bolsa si es Administrador *@
-                    @if (rol != "Administrador")
+                    @* Bolsa solo para clientes *@
+                    @if (rol == "Cliente" || rol == "")
                     {
                         <a asp-controller="Carrito" asp-action="Index" class="btn-bolsa position-relative ms-2">
                             <i class="bi bi-bag"></i>
@@ -213,29 +233,26 @@
                 }
             </div>
 
+        </div>
+    </nav>
 
-    </div>  @* *@
-</nav>  @*  *@
-
-
-<div class="page-content">
-    <div class="container">
-        @RenderBody()
+    <div class="page-content">
+        <div class="container">
+            @RenderBody()
+        </div>
     </div>
-</div>
 
+    <footer>
+        <div class="container">
+            &copy; 2026 &nbsp;<strong>ALEANA STORE</strong>&nbsp; — Cajamarca, Perú
+            &nbsp;|&nbsp;
+            <a asp-controller="Home" asp-action="Privacy">Privacidad</a>
+        </div>
+    </footer>
 
-<footer>
-    <div class="container">
-        &copy; 2026 &nbsp;<strong>ALEANA STORE</strong>&nbsp; — Cajamarca, Perú
-        &nbsp;|&nbsp;
-        <a asp-controller="Home" asp-action="Privacy">Privacidad</a>
-    </div>
-</footer>
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

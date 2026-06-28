@@ -1,17 +1,31 @@
 ﻿@model IEnumerable<SISTEMA_WEB___TIENDA.Models.Pedido>
 @{
-    ViewData["Title"] = "Pedidos";
+    ViewData["Title"] = "Pedidos y Ventas";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
     .page-header {
-        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+        background: linear-gradient(135deg, #198754, #146c43);
         border-radius: 14px;
-        padding: 22px 28px;
+        padding: 24px 28px;
         color: white;
         margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
     }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            top: -50px;
+            right: -30px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
 
         .page-header h4 {
             font-family: 'Playfair Display', serif;
@@ -19,27 +33,35 @@
             margin: 0;
         }
 
-    .tabla-admin th {
-        background: #4a1020;
+    .tabla-caja th {
+        background: #146c43;
         color: white;
         font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 0.8px;
+        font-weight: 600;
     }
 
-    .tabla-admin td {
+    .tabla-caja td {
         font-size: 0.875rem;
         vertical-align: middle;
     }
 
-    .tabla-admin tbody tr:hover {
-        background: #fdf8f8;
+    .tabla-caja tbody tr:hover {
+        background: #f0faf4;
     }
 
-    .btn-accion {
-        padding: 5px 12px;
+    .badge-estado {
         border-radius: 6px;
-        font-size: 0.75rem;
+        padding: 3px 10px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .btn-acc {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.72rem;
         font-weight: 600;
         text-decoration: none;
         display: inline-flex;
@@ -48,42 +70,40 @@
         border: none;
         cursor: pointer;
         transition: opacity 0.2s;
+        color: white;
     }
 
-        .btn-accion:hover {
+        .btn-acc:hover {
             opacity: 0.82;
+            color: white;
+        }
+
+    .search-box {
+        width: 220px;
+        border-radius: 8px;
+        border: 1.5px solid #ddd;
+        font-size: 0.85rem;
+        padding: 7px 12px;
+    }
+
+        .search-box:focus {
+            border-color: #198754;
+            outline: none;
+            box-shadow: none;
         }
 </style>
 
 <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
-    <div>
-        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.6);text-transform:uppercase;">
             <i class="bi bi-receipt me-1"></i>Gestión
         </p>
         <h4>Pedidos y Ventas</h4>
     </div>
-    <a asp-controller="Login" asp-action="Admin"
-       class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;">
-        <i class="bi bi-arrow-left me-1"></i>Dashboard
+    <a asp-controller="Caja" asp-action="Index"
+       class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;position:relative;z-index:1;">
+        <i class="bi bi-arrow-left me-1"></i>Panel de Caja
     </a>
-</div>
-
-<!-- Formulario de búsqueda agregado justo debajo del encabezado -->
-<div class="mb-3 mt-3 d-flex justify-content-end">
-    <form asp-action="Index" method="get" class="d-flex gap-2">
-        <input type="text" name="searchString" class="form-control form-control-sm" 
-               placeholder="Buscar por N° de pedido..." 
-               value="@ViewBag.CurrentFilter" style="width: 200px;" />
-        <button type="submit" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-search"></i> Buscar
-        </button>
-        @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter))
-        {
-            <a asp-action="Index" class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-x-circle"></i> Limpiar
-            </a>
-        }
-    </form>
 </div>
 
 @if (TempData["OK"] != null)
@@ -93,19 +113,45 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show small py-2 mb-3">
+        <i class="bi bi-exclamation-circle me-1"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Buscador -->
+<div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span class="text-muted small">@Model.Count() pedido(s) encontrado(s)</span>
+    <form asp-action="Index" method="get" class="d-flex gap-2 align-items-center">
+        <input type="text" name="searchString" class="search-box"
+               placeholder="Buscar por N° pedido..."
+               value="@ViewBag.CurrentFilter" />
+        <button type="submit" class="btn btn-sm fw-bold text-white" style="background:#198754;border-radius:8px;">
+            <i class="bi bi-search"></i>
+        </button>
+        @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter as string))
+        {
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">
+                <i class="bi bi-x-circle"></i>
+            </a>
+        }
+    </form>
+</div>
 
 @if (!Model.Any())
 {
-    <div class="text-center py-5 text-muted">
+    <div class="text-center py-5 text-muted bg-white rounded-3 shadow-sm border">
         <i class="bi bi-bag-x" style="font-size:2.5rem;color:#ddd;"></i>
-        <p class="mt-2">No hay pedidos registrados o que coincidan con la búsqueda.</p>
+        <p class="mt-2 mb-0">No hay pedidos registrados o que coincidan con la búsqueda.</p>
     </div>
 }
 else
 {
     <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
         <div class="table-responsive">
-            <table class="table tabla-admin align-middle mb-0">
+            <table class="table tabla-caja align-middle mb-0">
                 <thead>
                     <tr>
                         <th class="ps-3">N° Pedido</th>
@@ -120,29 +166,44 @@ else
                 <tbody>
                     @foreach (var p in Model)
                     {
+                        var (bg, fg) = p.Estado?.NombreEstado switch
+                        {
+                            "Pendiente" => ("#fef9c3", "#854d0e"),
+                            "Procesando" => ("#dbeafe", "#1e40af"),
+                            "Enviado" => ("#e0e7ff", "#3730a3"),
+                            "Entregado" => ("#d1fae5", "#065f46"),
+                            "Cancelado" => ("#fee2e2", "#991b1b"),
+                            _ => ("#f3f4f6", "#374151")
+                        };
                         <tr>
-                            <td class="ps-3 font-monospace fw-bold" style="color:#6b1a2a;">#@p.PedidoId.ToString("D6")</td>
+                            <td class="ps-3 fw-bold font-monospace" style="color:#198754;">#@p.PedidoId.ToString("D6")</td>
                             <td style="font-size:0.82rem;">@p.FechaPedido.ToString("dd/MM/yyyy HH:mm")</td>
                             <td>@p.Clientes?.Nombres</td>
                             <td style="font-size:0.82rem;color:#666;">@p.MetodoPago?.DescripcionPago</td>
-                            <td>
-                                <span style="background:rgba(107,26,42,0.07);color:#6b1a2a;border-radius:6px;padding:3px 9px;font-size:0.7rem;font-weight:600;">
-                                    @p.Estado?.NombreEstado
-                                </span>
-                            </td>
-                            <td class="text-end fw-bold">S/ @p.TotalCompra.ToString("N2")</td>
+                            <td><span class="badge-estado" style="background:@bg;color:@fg;">@p.Estado?.NombreEstado</span></td>
+                            <td class="text-end fw-bold" style="color:#198754;">S/ @p.TotalCompra.ToString("N2")</td>
                             <td class="text-center pe-3">
                                 <div class="d-flex justify-content-center gap-1">
+                                    <!-- Ver detalle -->
                                     <a asp-action="Detalle" asp-route-id="@p.PedidoId"
-                                       class="btn-accion text-white" style="background:#1a4a8a;">
+                                       class="btn-acc" style="background:#1a4a8a;" title="Ver detalle">
                                         <i class="bi bi-eye"></i>
                                     </a>
+                                    <!-- Cambiar estado (todos los roles) -->
+                                    <a asp-action="CambiarEstado" asp-route-id="@p.PedidoId"
+                                       class="btn-acc" style="background:#c9a84c;" title="Cambiar estado">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </a>
+                                    <!-- Eliminar (solo Administrador) -->
                                     @if (User.IsInRole("Administrador"))
                                     {
-                                        <a asp-action="CambiarEstado" asp-route-id="@p.PedidoId"
-                                           class="btn-accion text-white" style="background:#c9a84c;">
-                                            <i class="bi bi-arrow-repeat"></i>
-                                        </a>
+                                        <form asp-action="Eliminar" asp-route-id="@p.PedidoId" method="post"
+                                              onsubmit="return confirm('¿Eliminar pedido #@p.PedidoId.ToString("D6")? Esta acción no se puede deshacer.')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-acc" style="background:#dc3545;" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     }
                                 </div>
                             </td>
