@@ -33,6 +33,10 @@ namespace SISTEMA_WEB___TIENDA.Models
         public int EstadoId { get; set; }
         public virtual EstadoPedido Estado { get; set; }
 
+        // Cajero responsable (null = pedido hecho por web)
+        public int? CajeroId { get; set; }
+        public virtual Clientes? Cajero { get; set; }
+
         public virtual ICollection<DetallePedido> Detalles { get; set; }
     }
 }

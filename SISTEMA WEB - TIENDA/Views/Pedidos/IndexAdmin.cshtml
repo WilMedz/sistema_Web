@@ -1,0 +1,243 @@
+﻿@model IEnumerable<SISTEMA_WEB___TIENDA.Models.Pedido>
+@{
+    ViewData["Title"] = "Pedidos y Ventas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .page-header-admin {
+        background: linear-gradient(135deg, #4a1020, #6b1a2a, #8c2438);
+        border-radius: 14px;
+        padding: 24px 28px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .page-header-admin::after {
+            content: '';
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%);
+            top: -50px;
+            right: -30px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .page-header-admin h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+    .tabla-admin th {
+        background: #4a1020;
+        color: white;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+    }
+
+    .tabla-admin td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    .tabla-admin tbody tr:hover {
+        background: #fdf4f6;
+    }
+
+    .badge-estado {
+        border-radius: 6px;
+        padding: 3px 10px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .btn-acc {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        color: white;
+    }
+
+        .btn-acc:hover {
+            opacity: 0.82;
+            color: white;
+        }
+
+    .search-box {
+        width: 220px;
+        border-radius: 8px;
+        border: 1.5px solid #ddd;
+        font-size: 0.85rem;
+        padding: 7px 12px;
+    }
+
+        .search-box:focus {
+            border-color: #6b1a2a;
+            outline: none;
+            box-shadow: none;
+        }
+
+    .cajero-badge {
+        font-size: 0.72rem;
+        color: #555;
+        background: #f1f5f9;
+        border-radius: 5px;
+        padding: 2px 8px;
+        white-space: nowrap;
+    }
+
+        .cajero-badge.web {
+            color: #888;
+            background: #f8f8f8;
+        }
+</style>
+
+<div class="page-header-admin d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div style="position:relative;z-index:1;">
+        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
+            <i class="bi bi-receipt me-1"></i>Administración
+        </p>
+        <h4>Pedidos y Ventas</h4>
+    </div>
+    <a asp-controller="Login" asp-action="Admin"
+       class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;position:relative;z-index:1;">
+        <i class="bi bi-arrow-left me-1"></i>Dashboard
+    </a>
+</div>
+
+@if (TempData["OK"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show small py-2 mb-3">
+        <i class="bi bi-check-circle me-1"></i>@TempData["OK"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show small py-2 mb-3">
+        <i class="bi bi-exclamation-circle me-1"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span class="text-muted small">@Model.Count() pedido(s) encontrado(s)</span>
+    <form asp-action="Index" method="get" class="d-flex gap-2 align-items-center">
+        <input type="text" name="searchString" class="search-box"
+               placeholder="Buscar por N° pedido..."
+               value="@ViewBag.CurrentFilter" />
+        <button type="submit" class="btn btn-sm fw-bold text-white" style="background:#6b1a2a;border-radius:8px;">
+            <i class="bi bi-search"></i>
+        </button>
+        @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter as string))
+        {
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">
+                <i class="bi bi-x-circle"></i>
+            </a>
+        }
+    </form>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted bg-white rounded-3 shadow-sm border">
+        <i class="bi bi-bag-x" style="font-size:2.5rem;color:#ddd;"></i>
+        <p class="mt-2 mb-0">No hay pedidos registrados o que coincidan con la búsqueda.</p>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table tabla-admin align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">N° Pedido</th>
+                        <th>Fecha y Hora</th>
+                        <th>Cliente</th>
+                        <th>Método Pago</th>
+                        <th>Estado</th>
+                        <th>Cajero</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-center pe-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        var (bg, fg) = p.Estado?.NombreEstado switch
+                        {
+                            "Pendiente" => ("#fef9c3", "#854d0e"),
+                            "Confirmado" => ("#d1fae5", "#065f46"),
+                            "En camino" => ("#e0e7ff", "#3730a3"),
+                            "Entregado" => ("#d1fae5", "#065f46"),
+                            "Cancelado" => ("#fee2e2", "#991b1b"),
+                            _ => ("#f3f4f6", "#374151")
+                        };
+                        var numPedido = p.PedidoId.ToString("D6");
+                        <tr>
+                            <td class="ps-3 fw-bold font-monospace" style="color:#6b1a2a;">#@numPedido</td>
+                            <td style="font-size:0.82rem;">@p.FechaPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@p.Clientes?.Nombres</td>
+                            <td style="font-size:0.82rem;color:#666;">@p.MetodoPago?.DescripcionPago</td>
+                            <td>
+                                <span class="badge-estado" style="background:@bg;color:@fg;">
+                                    @p.Estado?.NombreEstado
+                                </span>
+                            </td>
+                            <td>
+                                @if (p.Cajero != null)
+                                {
+                                    <span class="cajero-badge">
+                                        <i class="bi bi-person-badge me-1"></i>@p.Cajero.Nombres
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cajero-badge web">
+                                        <i class="bi bi-globe me-1"></i>Web
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end fw-bold" style="color:#6b1a2a;">S/ @p.TotalCompra.ToString("N2")</td>
+                            <td class="text-center pe-3">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a asp-action="Detalle" asp-route-id="@p.PedidoId"
+                                       class="btn-acc" style="background:#1a4a8a;" title="Ver detalle">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="CambiarEstado" asp-route-id="@p.PedidoId"
+                                       class="btn-acc" style="background:#c9a84c;" title="Cambiar estado">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </a>
+                                    <form asp-action="Eliminar" asp-route-id="@p.PedidoId" method="post"
+                                          onsubmit="return confirm('¿Eliminar pedido #@numPedido? Esta acción no se puede deshacer.')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-acc" style="background:#dc3545;" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

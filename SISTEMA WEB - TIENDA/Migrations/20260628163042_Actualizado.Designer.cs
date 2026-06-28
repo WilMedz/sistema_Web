@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SISTEMA_WEB___TIENDA.Data;
 
@@ -11,9 +12,11 @@ using SISTEMA_WEB___TIENDA.Data;
 namespace SISTEMA_WEB___TIENDA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260628163042_Actualizado")]
+    partial class Actualizado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -356,9 +359,6 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PedidoId"));
 
-                    b.Property<int?>("CajeroId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientesId")
                         .HasColumnType("int");
 
@@ -379,8 +379,6 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("PedidoId");
-
-                    b.HasIndex("CajeroId");
 
                     b.HasIndex("ClientesId");
 
@@ -636,11 +634,6 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
             modelBuilder.Entity("SISTEMA_WEB___TIENDA.Models.Pedido", b =>
                 {
-                    b.HasOne("SISTEMA_WEB___TIENDA.Models.Clientes", "Cajero")
-                        .WithMany()
-                        .HasForeignKey("CajeroId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("SISTEMA_WEB___TIENDA.Models.Clientes", "Clientes")
                         .WithMany("Pedidos")
                         .HasForeignKey("ClientesId")
@@ -664,8 +657,6 @@ namespace SISTEMA_WEB___TIENDA.Migrations
                         .HasForeignKey("MetodoPagoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Cajero");
 
                     b.Navigation("Clientes");
 

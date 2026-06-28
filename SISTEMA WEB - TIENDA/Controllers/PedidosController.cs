@@ -19,13 +19,27 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 .Include(p => p.Clientes)
                 .Include(p => p.Estado)
                 .Include(p => p.MetodoPago)
+                .Include(p => p.Cajero)
                 .AsQueryable();
+
+            if (User.IsInRole("Cajero"))
+            {
+                var cajeroId = HttpContext.Session.GetInt32("ClienteId");
+                if (cajeroId.HasValue)
+                    pedidos = pedidos.Where(p => p.CajeroId == cajeroId.Value);
+            }
 
             if (!string.IsNullOrEmpty(searchString))
                 pedidos = pedidos.Where(p => p.PedidoId.ToString().Contains(searchString));
 
             ViewBag.CurrentFilter = searchString;
-            return View(await pedidos.OrderByDescending(p => p.FechaPedido).ToListAsync());
+            var lista = await pedidos.OrderByDescending(p => p.FechaPedido).ToListAsync();
+
+            // Vista diferente según rol
+            if (User.IsInRole("Administrador"))
+                return View("IndexAdmin", lista);
+
+            return View("IndexCajero", lista);
         }
 
         public async Task<IActionResult> Detalle(int id)
@@ -34,6 +48,7 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 .Include(p => p.Clientes)
                 .Include(p => p.Estado)
                 .Include(p => p.MetodoPago)
+                .Include(p => p.Cajero)      // ← AGREGAR
                 .Include(p => p.DireccionEnvio)
                 .Include(p => p.Detalles)
                     .ThenInclude(d => d.Variante)
@@ -44,7 +59,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return View(pedido);
         }
 
-        // Ahora accesible para Cajero también
         [HttpGet]
         public async Task<IActionResult> CambiarEstado(int id)
         {
@@ -72,7 +86,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Solo Administrador puede eliminar
         [HttpPost, ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Eliminar(int id)
@@ -83,7 +96,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
 
             if (pedido == null) return NotFound();
 
-            // Restaurar stock antes de eliminar
             foreach (var detalle in pedido.Detalles)
             {
                 var variante = await _context.VariantesPrenda.FindAsync(detalle.VarianteId);

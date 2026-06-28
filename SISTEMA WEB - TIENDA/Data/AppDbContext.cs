@@ -38,6 +38,12 @@ namespace SISTEMA_WEB___TIENDA.Data
                 .WithMany(d => d.Pedidos)
                 .HasForeignKey(p => p.DireccionId)
                 .OnDelete(DeleteBehavior.Restrict);
+           
+            modelBuilder.Entity<Pedido>()
+                .HasOne(p => p.Cajero)
+                .WithMany()
+                .HasForeignKey(p => p.CajeroId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Pedido>()
                 .HasOne(p => p.Clientes)

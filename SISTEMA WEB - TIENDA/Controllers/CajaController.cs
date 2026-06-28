@@ -216,7 +216,9 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                     ClientesId = clienteTemp.ClienteId,
                     DireccionId = direccion.DireccionId,
                     MetodoPagoId = MetodoPagoId,
-                    EstadoId = estado.EstadoId
+                    EstadoId = estado.EstadoId,
+                    CajeroId = cajeroId.Value
+
                 };
                 _context.Pedidos.Add(pedido);
                 await _context.SaveChangesAsync();
