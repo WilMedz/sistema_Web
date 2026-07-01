@@ -6,6 +6,10 @@ using SISTEMA_WEB___TIENDA.Data;
 using SISTEMA_WEB___TIENDA.Extensions;
 using SISTEMA_WEB___TIENDA.Models;
 using SISTEMA_WEB___TIENDA.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SISTEMA_WEB___TIENDA.Controllers
 {
@@ -51,7 +55,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             ViewBag.TotalPedidosHoy = todosHoy.Count;
             ViewBag.PedidosHoy = pedidosHoy;
             ViewBag.CajeroNombre = HttpContext.Session.GetString("UsuarioNombre") ?? "";
-
             return View();
         }
 
@@ -69,7 +72,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
 
             var yaAbierta = await _context.RegistrosCaja
                 .AnyAsync(r => r.ClientesId == cajeroId.Value && r.FechaCierre == null);
-
             if (yaAbierta)
             {
                 TempData["ErrorCaja"] = "Ya tienes una caja abierta.";
@@ -95,7 +97,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             var cajeroId = HttpContext.Session.GetInt32("ClienteId");
             var caja = await _context.RegistrosCaja
                 .FirstOrDefaultAsync(r => r.ClientesId == cajeroId && r.FechaCierre == null);
-
             if (caja == null)
             {
                 TempData["ErrorCaja"] = "No tienes una caja abierta.";
@@ -118,7 +119,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             var cajeroId = HttpContext.Session.GetInt32("ClienteId");
             var caja = await _context.RegistrosCaja
                 .FirstOrDefaultAsync(r => r.ClientesId == cajeroId && r.FechaCierre == null);
-
             if (caja == null) return RedirectToAction(nameof(Index));
 
             caja.FechaCierre = DateTime.Now;
@@ -128,7 +128,7 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ── NUEVA VENTA ──────────────────────────────────────────────
+        // ── NUEVA VENTA (CORREGIDO) ──────────────────────────────────
         [HttpGet]
         public async Task<IActionResult> NuevaVenta()
         {
@@ -144,9 +144,7 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Limpiar carrito anterior
-            HttpContext.Session.Remove(SessionKey);
-
+            // Se removió el Remove(SessionKey) para que persistan los elementos agregados en mostrador
             var variantes = await _context.VariantesPrenda
                 .Include(v => v.Prenda)
                 .Where(v => v.Stock > 0)
@@ -164,7 +162,8 @@ namespace SISTEMA_WEB___TIENDA.Controllers
 
             return View(variantes);
         }
-        // ── GENERAR PEDIDO DIRECTO (sin cliente registrado) ──────────────
+
+        // ── GENERAR PEDIDO DIRECTO ───────────────────────────────────
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerarPedidoDirecto(string NombreCliente,
             string CalleAvenida, string Distrito, string Referencia, int MetodoPagoId)
@@ -179,7 +178,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             using var transaccion = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Crear cliente temporal con el nombre ingresado
                 var rolCliente = await _context.Roles.FirstOrDefaultAsync(r => r.NombreRol == "Cliente");
                 var ciudadDefault = await _context.Ciudades.FirstAsync();
 
@@ -218,7 +216,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                     MetodoPagoId = MetodoPagoId,
                     EstadoId = estado.EstadoId,
                     CajeroId = cajeroId.Value
-
                 };
                 _context.Pedidos.Add(pedido);
                 await _context.SaveChangesAsync();
@@ -253,6 +250,7 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 return RedirectToAction(nameof(NuevaVenta));
             }
         }
+
         // ── SELECCIONAR PRODUCTOS ────────────────────────────────────
         [HttpGet]
         public async Task<IActionResult> SeleccionarProductos()
@@ -275,16 +273,16 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             return View(variantes);
         }
 
+        // ── AGREGAR PRODUCTO (CORREGIDO) ──────────────────────────────
         [HttpPost]
         public async Task<IActionResult> AgregarProducto(int varianteId, int cantidad = 1)
         {
+            // Validamos dinámicamente si hay cliente en sesión
             var clienteId = HttpContext.Session.GetInt32("CajaClienteId");
-            if (clienteId == null) return RedirectToAction(nameof(NuevaVenta));
 
             var variante = await _context.VariantesPrenda
                 .Include(v => v.Prenda)
                 .FirstOrDefaultAsync(v => v.VarianteId == varianteId);
-
             if (variante == null) return NotFound();
 
             var carrito = HttpContext.Session.GetObject<List<CarritoItem>>(SessionKey)
@@ -292,11 +290,10 @@ namespace SISTEMA_WEB___TIENDA.Controllers
 
             var item = carrito.FirstOrDefault(i => i.VarianteId == varianteId);
             int total = cantidad + (item?.Cantidad ?? 0);
-
             if (total > variante.Stock)
             {
                 TempData["ErrorStock"] = $"Stock insuficiente. Disponible: {variante.Stock}";
-                return RedirectToAction(nameof(SeleccionarProductos));
+                return RedirectToAction(clienteId != null ? nameof(SeleccionarProductos) : nameof(NuevaVenta));
             }
 
             decimal precio = (variante.Prenda.PrecioOferta.HasValue && variante.Prenda.PrecioOferta > 0)
@@ -318,9 +315,15 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                 });
 
             HttpContext.Session.SetObject(SessionKey, carrito);
-            return RedirectToAction(nameof(SeleccionarProductos));
+
+            if (clienteId != null)
+            {
+                return RedirectToAction(nameof(SeleccionarProductos));
+            }
+            return RedirectToAction(nameof(NuevaVenta));
         }
 
+        // ── QUITAR PRODUCTO (CORREGIDO) ───────────────────────────────
         [HttpPost]
         public IActionResult QuitarProducto(int varianteId)
         {
@@ -329,7 +332,12 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             var item = carrito.FirstOrDefault(i => i.VarianteId == varianteId);
             if (item != null) carrito.Remove(item);
             HttpContext.Session.SetObject(SessionKey, carrito);
-            return RedirectToAction(nameof(SeleccionarProductos));
+
+            if (HttpContext.Session.GetInt32("CajaClienteId") != null)
+            {
+                return RedirectToAction(nameof(SeleccionarProductos));
+            }
+            return RedirectToAction(nameof(NuevaVenta));
         }
 
         // ── CONFIRMAR VENTA ──────────────────────────────────────────
@@ -349,7 +357,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
             ViewBag.MetodosPago = new SelectList(
                 await _context.MetodosPago.ToListAsync(),
                 "MetodoPagoId", "DescripcionPago");
-
             return View();
         }
 
@@ -401,7 +408,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                         throw new Exception($"Variante de '{item.NombrePrenda}' no encontrada.");
                     if (item.Cantidad > variante.Stock)
                         throw new Exception($"Stock insuficiente para '{item.NombrePrenda}'.");
-
                     variante.Stock -= item.Cantidad;
                     _context.DetallesPedido.Add(new DetallePedido
                     {
@@ -414,7 +420,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
 
                 await _context.SaveChangesAsync();
                 await transaccion.CommitAsync();
-
                 HttpContext.Session.Remove(SessionKey);
                 HttpContext.Session.Remove("CajaClienteId");
                 HttpContext.Session.Remove("CajaClienteNombre");
@@ -443,7 +448,6 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                     .ThenInclude(d => d.Variante)
                         .ThenInclude(v => v.Prenda)
                 .FirstOrDefaultAsync(p => p.PedidoId == id);
-
             if (pedido == null) return NotFound();
             return View(pedido);
         }
@@ -461,13 +465,11 @@ namespace SISTEMA_WEB___TIENDA.Controllers
                     .ThenInclude(d => d.Variante)
                         .ThenInclude(v => v.Prenda)
                 .FirstOrDefaultAsync(p => p.PedidoId == id);
-
             if (pedido == null) return NotFound();
 
             ViewBag.Estados = new SelectList(
                 await _context.EstadosPedido.ToListAsync(),
                 "EstadoId", "NombreEstado", pedido.EstadoId);
-
             return View(pedido);
         }
 
