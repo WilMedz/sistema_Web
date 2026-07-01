@@ -480,11 +480,8 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("ProveedorId");
 
-<<<<<<< HEAD
-=======
                     b.HasIndex("CategoriaId");
 
->>>>>>> bbf466b9450907c958ac8780c21b7c07dd6d9b90
                     b.ToTable("Proveedores");
                 });
 

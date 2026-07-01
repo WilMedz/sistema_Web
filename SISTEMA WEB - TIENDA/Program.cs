@@ -49,7 +49,7 @@ app.UseSession();            // ← antes de Authentication
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ── Ruta por defecto***
+// ruta por defecto***
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Login}/{id?}");
