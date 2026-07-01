@@ -5,141 +5,134 @@
 }
 
 <style>
-    .form-header {
-        background: linear-gradient(135deg, #4a1020, #6b1a2a);
+    .form-container {
+        background: white;
         border-radius: 14px;
-        padding: 22px 28px;
-        color: white;
-        margin-bottom: 24px;
+        padding: 28px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
-        .form-header h4 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            margin: 0;
-        }
-
-    .form-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(107,26,42,0.07);
-        padding: 28px;
+    .form-title {
+        font-family: 'Playfair Display', serif;
+        color: #4a1020;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #f2ebed;
+        padding-bottom: 10px;
     }
 
     .field-label {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         font-weight: 700;
+        color: #4a1020;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #888;
+        letter-spacing: 0.5px;
         margin-bottom: 6px;
-        display: block;
     }
 
-    .field-input {
+    .field-input, .field-select {
         width: 100%;
-        border: none;
-        border-bottom: 1.5px solid #ddd;
-        border-radius: 0;
-        padding: 9px 0;
-        font-size: 0.9rem;
-        font-family: 'Inter', sans-serif;
-        background: transparent;
-        outline: none;
-        transition: border-color 0.2s;
+        border: 1px solid #dcd1d4;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+        color: #333;
+        transition: all 0.2s ease;
     }
 
-        .field-input:focus {
-            border-bottom-color: #6b1a2a;
+        .field-input:focus, .field-select:focus {
+            border-color: #6b1a2a;
+            box-shadow: 0 0 0 3px rgba(107,26,42,0.1);
+            outline: none;
         }
 
     .section-divider {
-        font-size: 0.67rem;
+        font-size: 0.75rem;
         font-weight: 700;
+        color: #c9a84c;
         text-transform: uppercase;
-        letter-spacing: 2px;
-        color: #aaa;
-        margin: 24px 0 16px;
-        border-bottom: 1px solid #f0f0f0;
-        padding-bottom: 8px;
+        letter-spacing: 1px;
+        margin-top: 24px;
+        margin-bottom: 12px;
+        border-bottom: 1px dashed #e6dcde;
+        padding-bottom: 4px;
     }
 
     .btn-guardar {
-        background: #6b1a2a;
+        background-color: #6b1a2a;
         color: white;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 10px 20px;
+        border-radius: 6px;
         border: none;
-        border-radius: 8px;
-        padding: 11px 28px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        font-family: 'Inter', sans-serif;
-        cursor: pointer;
         transition: background 0.2s;
     }
 
         .btn-guardar:hover {
-            background: #4a1020;
+            background-color: #4a1020;
         }
 
     .btn-cancelar {
-        background: transparent;
-        color: #888;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 11px 20px;
-        font-size: 0.82rem;
-        font-weight: 500;
+        background-color: #f5f0f2;
+        color: #6b1a2a;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 10px 20px;
+        border-radius: 6px;
+        border: 1px solid #e1d3d6;
         text-decoration: none;
         transition: all 0.2s;
     }
 
         .btn-cancelar:hover {
-            border-color: #6b1a2a;
-            color: #6b1a2a;
+            background-color: #ebdbe0;
+            color: #4a1020;
         }
-
-    .form-check-input:checked {
-        background-color: #6b1a2a;
-        border-color: #6b1a2a;
-    }
 </style>
 
-<div class="form-header">
-    <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
-        <i class="bi bi-truck me-1"></i>Proveedores
-    </p>
-    <h4>Nuevo Proveedor</h4>
-</div>
+<div class="form-container">
+    <div class="form-title"><i class="bi bi-plus-circle-fill me-2"></i>Registrar Nuevo Proveedor</div>
 
-<div class="form-card">
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
-        <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 mb-3"></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" style="font-size:0.8rem;"></div>
 
         <div class="section-divider">Datos de la Empresa</div>
         <div class="row g-4">
-            <div class="col-md-8">
+            <div class="col-md-5">
                 <label class="field-label">Razón Social</label>
-                <input asp-for="RazonSocial" class="field-input" placeholder="Ej: Textiles CAX S.A.C." />
+                <input asp-for="RazonSocial" class="field-input" placeholder="Ej. Corporación Textil S.A.C." />
                 <span asp-validation-for="RazonSocial" class="text-danger" style="font-size:0.72rem;"></span>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="field-label">RUC</label>
-                <input asp-for="RUC" class="field-input" placeholder="Ej: 20601234567" maxlength="11" />
+                <input asp-for="RUC" class="field-input" maxlength="11" placeholder="11 dígitos" />
                 <span asp-validation-for="RUC" class="text-danger" style="font-size:0.72rem;"></span>
             </div>
-            <div class="col-md-8">
-                <label class="field-label">Dirección</label>
-                <input asp-for="Direccion" class="field-input" placeholder="Ej: Urb. Santa Victoria - Chiclayo" />
+            <div class="col-md-4">
+                <label class="field-label">Categoría de Prenda Abastecida</label>
+                <select asp-for="CategoriaId" class="field-select" asp-items="ViewBag.Categorias">
+                    <option value="">-- Ninguna / Asignar después --</option>
+                </select>
+                <span asp-validation-for="CategoriaId" class="text-danger" style="font-size:0.72rem;"></span>
+            </div>
+        </div>
+
+        <div class="section-divider">Ubicación</div>
+        <div class="row g-4">
+            <div class="col-md-9">
+                <label class="field-label">Dirección Fiscal</label>
+                <input asp-for="Direccion" class="field-input" placeholder="Av. Principal 123, Lima" />
                 <span asp-validation-for="Direccion" class="text-danger" style="font-size:0.72rem;"></span>
             </div>
-            <div class="col-md-4 d-flex flex-column justify-content-end">
+            <div class="col-md-3">
                 <label class="field-label">Estado</label>
-                <div class="d-flex align-items-center gap-2 pb-2">
-                    <input asp-for="Activo" class="form-check-input mt-0" type="checkbox" checked />
-                    <span style="font-size:0.85rem;color:#555;">Proveedor activo</span>
+                <div class="d-flex align-items-center" style="height: 38px;">
+                    <input asp-for="Activo" type="checkbox" class="form-check-input me-2" style="cursor:pointer; width:18px; height:18px;" checked />
+                    <span style="font-size:0.85rem; color:#555;">Proveedor activo</span>
                 </div>
             </div>
         </div>
@@ -148,12 +141,12 @@
         <div class="row g-4">
             <div class="col-md-4">
                 <label class="field-label">Persona de Contacto</label>
-                <input asp-for="Contacto" class="field-input" placeholder="Ej: Juan Perez" />
+                <input asp-for="Contacto" class="field-input" placeholder="Nombre del representante" />
                 <span asp-validation-for="Contacto" class="text-danger" style="font-size:0.72rem;"></span>
             </div>
             <div class="col-md-4">
                 <label class="field-label">Teléfono</label>
-                <input asp-for="Telefono" class="field-input" placeholder="Ej: 987654321" />
+                <input asp-for="Telefono" class="field-input" placeholder="Ej. 987654321" />
                 <span asp-validation-for="Telefono" class="text-danger" style="font-size:0.72rem;"></span>
             </div>
             <div class="col-md-4">
@@ -167,11 +160,9 @@
             <button type="submit" class="btn-guardar">
                 <i class="bi bi-check-lg me-2"></i>REGISTRAR PROVEEDOR
             </button>
-            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
+            <a asp-action="Index" class="btn-cancelar d-flex align-items-center">
+                <i class="bi bi-x-lg me-2"></i>CANCELAR
+            </a>
         </div>
     </form>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

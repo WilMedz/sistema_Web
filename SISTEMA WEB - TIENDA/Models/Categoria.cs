@@ -10,9 +10,8 @@ namespace SISTEMA_WEB___TIENDA.Models
         public int CategoriaId { get; set; }
 
         [Required, StringLength(50)]
-        public string NombreCategoria { get; set; }
+        public string NombreCategoria { get; set; } = null!;
 
         public virtual ICollection<Prenda> Prendas { get; set; } = new List<Prenda>();
-
     }
 }
