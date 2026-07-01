@@ -1,17 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SISTEMA_WEB___TIENDA.Data;
+using SISTEMA_WEB___TIENDA.Extensions;
+using SISTEMA_WEB___TIENDA.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SISTEMA_WEB___TIENDA.Data;
-using SISTEMA_WEB___TIENDA.Models;
-using SISTEMA_WEB___TIENDA.Extensions;
 
 namespace SISTEMA_WEB___TIENDA.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
     private readonly AppDbContext _context;
@@ -22,12 +24,13 @@ public class HomeController : Controller
         _context = context;
     }
 
-    // 1. VER CATÁLOGO (CON FILTRO DE BÚSQUEDA)
+    //VER CATÁLOGO 
     public async Task<IActionResult> Index(string buscar)
     {
         if (User.Identity == null || !User.Identity.IsAuthenticated)
         {
             return RedirectToAction("Login", "Login");
+
         }
 
         var prendasQuery = _context.Prendas
@@ -48,7 +51,7 @@ public class HomeController : Controller
         return View(catálogo);
     }
 
-    // NEW: ENDPOINT PARA SUGERENCIAS EN TIEMPO REAL (AJAX)
+    // ENDPOINT PARA SUGERENCIAS EN TIEMPO REAL (AJAX)
     [HttpGet]
     public async Task<JsonResult> BuscarSugerencias(string term)
     {
@@ -59,7 +62,7 @@ public class HomeController : Controller
 
         term = term.Trim().ToLower();
 
-        // Buscamos las prendas que coincidan en nombre, marca o categoría, limitando a un top 6 para optimizar velocidad
+        // nombre, marca o categoría
         var sugerencias = await _context.Prendas
             .Include(p => p.Marca)
             .Include(p => p.Categoria)
@@ -123,7 +126,7 @@ public class HomeController : Controller
         return RedirectToAction("Index");
     }
 
-    // 3. HACER UN PEDIDO (Finalizar Compra)
+    //finalizar Compra
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> FinalizarCompra()
@@ -189,7 +192,7 @@ public class HomeController : Controller
         return View(pedido);
     }
 
-    // 5. VER ESTADO DE PEDIDO (Rastreo)
+    // rastreo
     public IActionResult MisPedidos()
     {
         if (User.Identity == null || !User.Identity.IsAuthenticated)
