@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SISTEMA_WEB___TIENDA.Data;
 
@@ -11,9 +12,11 @@ using SISTEMA_WEB___TIENDA.Data;
 namespace SISTEMA_WEB___TIENDA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260701055220_ActualizaciónEstructura")]
+    partial class ActualizaciónEstructura
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -480,11 +483,8 @@ namespace SISTEMA_WEB___TIENDA.Migrations
 
                     b.HasKey("ProveedorId");
 
-<<<<<<< HEAD
-=======
                     b.HasIndex("CategoriaId");
 
->>>>>>> bbf466b9450907c958ac8780c21b7c07dd6d9b90
                     b.ToTable("Proveedores");
                 });
 

@@ -5,191 +5,207 @@
 }
 
 <style>
-        .page-header {
-            background: linear-gradient(135deg, #4a1020 0%, #6b1a2a 60%, #8c2438 100%);
-            border-radius: 14px;
-            padding: 22px 28px;
-            color: white;
-            margin-bottom: 24px;
-            position: relative;
-            overflow: hidden;
+    .page-header {
+        background: linear-gradient(135deg, #4a1020 0%, #6b1a2a 60%, #8c2438 100%);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
+            top: -40px;
+            right: -30px;
+            border-radius: 50%;
         }
 
-            .page-header::after {
-                content: '';
-                position: absolute;
-                width: 200px;
-                height: 200px;
-                background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
-                top: -40px;
-                right: -30px;
-                border-radius: 50%;
-            }
+        .page-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
 
-            .page-header h4 {
-                font-family: 'Playfair Display', serif;
-                font-size: 1.4rem;
-                margin: 0;
-            }
+    .tabla-admin th {
+        background: #4a1020;
+        color: #f8f5f0;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 14px 16px;
+        border: none;
+    }
 
-        .tabla-admin th {
+    .tabla-admin td {
+        padding: 14px 16px;
+        font-size: 0.8rem;
+        color: #333;
+        vertical-align: middle;
+        border-bottom: 1px solid #f2ebed;
+    }
+
+    .btn-nuevo-registro {
+        background-color: #c9a84c;
+        color: #2b0610;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+        .btn-nuevo-registro:hover {
+            background-color: #bfa046;
+            color: #2b0610;
+            transform: translateY(-1px);
+        }
+
+    .badge-categoria {
+        background-color: #f5f0f2;
+        color: #6b1a2a;
+        border: 1px solid #e1d3d6;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.72rem;
+    }
+
+    .input-pedido {
+        border: 1px solid #dcd1d4;
+        border-radius: 6px 0 0 6px;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        text-align: center;
+        width: 65px;
+    }
+
+        .input-pedido:focus {
+            border-color: #6b1a2a;
+            outline: none;
+        }
+
+    .btn-pedido {
+        background: #6b1a2a;
+        color: white;
+        border: none;
+        border-radius: 0 6px 6px 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        transition: background 0.2s;
+    }
+
+        .btn-pedido:hover {
             background: #4a1020;
             color: white;
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 600;
-        }
-
-        .tabla-admin td {
-            font-size: 0.875rem;
-            vertical-align: middle;
-        }
-
-        .tabla-admin tbody tr:hover {
-            background: #fdf8f8;
-        }
-
-        .btn-accion {
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: opacity 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-
-            .btn-accion:hover {
-                opacity: 0.82;
-            }
-
-        .section-lbl {
-            font-size: 0.67rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #aaa;
-            margin-bottom: 12px;
-        }
-
-        .badge-estado {
-            border-radius: 6px;
-            padding: 3px 9px;
-            font-size: 0.72rem;
-            font-weight: 700;
         }
 </style>
 
-<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
-    <div style="position:relative;z-index:1;">
-        <p class="mb-1" style="font-size:0.7rem;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;">
-            <i class="bi bi-truck me-1"></i>Administración
-        </p>
-        <h4>Proveedores</h4>
-    </div>
-    <div style="position:relative;z-index:1;display:flex;gap:8px;">
-        <a asp-action="Create" class="btn btn-sm fw-bold px-3"
-           style="background:#c9a84c;color:#4a1020;border-radius:8px;">
-            <i class="bi bi-plus-lg me-1"></i>Nuevo Proveedor
-        </a>
-        <a asp-controller="Login" asp-action="Admin"
-           class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-radius:8px;">
-            <i class="bi bi-arrow-left me-1"></i>Dashboard
-        </a>
-    </div>
-</div>
-
 @if (TempData["OK"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show small py-2 mb-3">
-        <i class="bi bi-check-circle me-1"></i>@TempData["OK"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="font-size:0.8rem; border-radius:8px;">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["OK"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-<div class="section-lbl">@Model.Count() proveedor(es) registrado(s)</div>
-
-@if (!Model.Any())
+@if (TempData["ErrorVenta"] != null)
 {
-    <div class="text-center py-5 text-muted">
-        <i class="bi bi-truck" style="font-size:2.5rem;color:#ddd;"></i>
-        <p class="mt-2">No hay proveedores registrados.</p>
-        <a asp-action="Create" class="btn btn-sm fw-bold text-white mt-1"
-           style="background:#6b1a2a;border-radius:8px;">
-            <i class="bi bi-plus-lg me-1"></i>Agregar proveedor
-        </a>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="font-size:0.8rem; border-radius:8px;">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorVenta"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-else
-{
-    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
-        <div class="table-responsive">
-            <table class="table tabla-admin align-middle mb-0">
-                <thead>
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h4>Gestión de Proveedores</h4>
+        <p class="mb-0 text-white-50" style="font-size: 0.75rem;">Administra tus socios de suministro y reabastece el inventario por categorías</p>
+    </div>
+    <a asp-action="Create" class="btn btn-nuevo-registro text-decoration-none">
+        <i class="bi bi-plus-lg me-1"></i> NUEVO PROVEEDOR
+    </a>
+</div>
+
+<div class="card shadow-sm border-0 style-card" style="border-radius: 12px; overflow: hidden;">
+    <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle mb-0 tabla-admin">
+            <thead>
+                <tr>
+                    <th>Razón Social</th>
+                    <th>RUC</th>
+                    <th>Contacto</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Categoría Asignada</th>
+                    <th class="text-center">Suministrar Stock</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
                     <tr>
-                        <th class="ps-3">Razón Social</th>
-                        <th>RUC</th>
-                        <th>Contacto</th>
-                        <th>Teléfono</th>
-                        <th>Correo</th>
-                        <th class="text-center">Estado</th>
-                        <th class="text-center pe-3">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var p in Model)
-                    {
-                        <tr>
-                            <td class="ps-3">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width:34px;height:34px;border-radius:50%;
-                                        background:#6b1a2a18;color:#6b1a2a;
-                                        display:flex;align-items:center;justify-content:center;
-                                        font-weight:700;font-size:0.85rem;flex-shrink:0;">
-                                        @p.RazonSocial[0].ToString().ToUpper()
-                                    </div>
-                                    <span class="fw-semibold">@p.RazonSocial</span>
-                                </div>
-                            </td>
-                            <td style="color:#666;font-family:monospace;">@p.RUC</td>
-                            <td style="color:#666;">@(p.Contacto ?? "—")</td>
-                            <td style="color:#666;">@(p.Telefono ?? "—")</td>
-                            <td style="color:#666;">@(p.Correo ?? "—")</td>
-                            <td class="text-center">
-                                @if (p.Activo)
-                                {
-                                    <span class="badge-estado" style="background:#d1fae5;color:#065f46;">Activo</span>
-                                }
-                                else
-                                {
-                                    <span class="badge-estado" style="background:#fee2e2;color:#991b1b;">Inactivo</span>
-                                }
-                            </td>
-                            <td class="text-center pe-3">
-                                <div class="d-flex justify-content-center gap-1">
-                                    <a asp-action="Edit" asp-route-id="@p.ProveedorId"
-                                       class="btn-accion text-white" style="background:#c9a84c;">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <form asp-action="Delete" asp-route-id="@p.ProveedorId" method="post"
-                                          onsubmit="return confirm('¿Eliminar a @p.RazonSocial?')">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn-accion text-white"
-                                                style="background:#6b1a2a;">
-                                            <i class="bi bi-trash3"></i>
+                        <td class="fw-bold text-dark">@item.RazonSocial</td>
+                        <td>@item.RUC</td>
+                        <td>@item.Contacto</td>
+                        <td>@item.Telefono</td>
+                        <td>@item.Correo</td>
+                        <td>
+                            @if (item.Categoria != null)
+                            {
+                                <span class="badge-categoria">@item.Categoria.NombreCategoria</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small italic">Sin asignar</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            @if (item.CategoriaId != null)
+                            {
+                                <form asp-action="HacerPedido" method="post" class="d-inline-block">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="proveedorId" value="@item.ProveedorId" />
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" name="cantidadPedida" class="input-pedido" value="20" min="1" required />
+                                        <button type="submit" class="btn-pedido">
+                                            <i class="bi bi-box-seam me-1"></i>Pedir
                                         </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.ProveedorId" class="text-decoration-none text-warning small fw-bold">
+                                    <i class="bi bi-gear-fill me-1"></i> Configurar
+                                </a>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a asp-action="Edit" asp-route-id="@item.ProveedorId" class="btn btn-sm text-white" style="background:#1a4a8a; border-radius:6px; font-size:0.72rem;" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@item.ProveedorId" method="post" onsubmit="return confirm('¿Está seguro de eliminar este proveedor?');" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm text-white" style="background:#dc3545; border-radius:6px; font-size:0.72rem;" title="Eliminar">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-}
+</div>
